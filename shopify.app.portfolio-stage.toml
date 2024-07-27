@@ -1,0 +1,20 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "e47215e0cc1cd7f81cd6433dee2b812b"
+name = "portfolio-stage"
+handle = "portfolio-stage"
+application_url = "https://portfolio-stage.fly.dev/"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [ "https://portfolio-stage.fly.dev/auth/callback" ]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false

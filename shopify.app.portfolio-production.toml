@@ -1,0 +1,27 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "ce39e82725fc85028909fc65f697e4ae"
+name = "portfolio"
+handle = "portfolio-12"
+application_url = "https://portfolio-production.fly.dev"
+embedded = true
+
+[build]
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://portfolio-production.fly.dev/auth/callback",
+  "https://portfolio-production.fly.dev/auth/shopify/callback",
+  "https://portfolio-production.fly.dev/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+[pos]
+embedded = false

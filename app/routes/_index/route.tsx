@@ -24,7 +24,9 @@ export default function App() {
       <div className={styles.content}>
         <h1 className={styles.heading}>A short heading about [your app]</h1>
         <p className={styles.text}>
+
           A tagline about [your app] that describes your value proposition. This will help your customers understand what your app does and why they should use it...55
+
         </p>
         {showForm && (
           <Form className={styles.form} method="post" action="/auth/login">

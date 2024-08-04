@@ -16,6 +16,7 @@ type Data = {
   logo?: string;
   tags: string[];
   client: string;
+  company: string;
   shop: string;
   status: string;
   testimonial: Testimonial;

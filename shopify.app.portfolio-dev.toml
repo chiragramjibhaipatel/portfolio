@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://humane-fly-tops.ngrok-free.app"
+application_url = "https://suited-curious-lynx.ngrok-free.app"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://humane-fly-tops.ngrok-free.app/auth/callback",
-  "https://humane-fly-tops.ngrok-free.app/auth/shopify/callback",
-  "https://humane-fly-tops.ngrok-free.app/api/auth/callback"
+  "https://suited-curious-lynx.ngrok-free.app/auth/callback",
+  "https://suited-curious-lynx.ngrok-free.app/auth/shopify/callback",
+  "https://suited-curious-lynx.ngrok-free.app/api/auth/callback"
 ]
 
 [webhooks]

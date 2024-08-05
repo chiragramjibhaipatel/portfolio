@@ -5,8 +5,20 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { PortfolioBackground } from "./components/PortfolioBackbround";
+import { useEffect, useState } from "react";
+
 
 export default function App() {
+  const [isPortfolio, setIsPortfolio] = useState(false);
+  useEffect(() => {
+    //check if the pathname is /app
+    if (window.location.pathname.startsWith("/portfolio")) {
+      setIsPortfolio(true);
+    }
+
+  }, []);
+
   return (
     <html>
       <head>
@@ -21,6 +33,7 @@ export default function App() {
         <Links />
       </head>
       <body>
+        {isPortfolio && <PortfolioBackground />}
         <Outlet />
         <ScrollRestoration />
         <Scripts />
@@ -28,3 +41,5 @@ export default function App() {
     </html>
   );
 }
+
+

@@ -13,11 +13,15 @@ type Data = {
   description: string;
   start: string;
   end: string;
-  logo?: string;
-  tags: string[];
+  logo: {url: string; altText: string};
   client: string;
   company: string;
   shop: string;
   status: string;
   testimonial: Testimonial;
+  companyProfile: string;
+  taskDetails: string;
+  solution: string;
+  hurdles: string;
+  tools: string[];
 };

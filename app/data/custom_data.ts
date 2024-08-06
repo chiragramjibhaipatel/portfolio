@@ -1,4 +1,42 @@
 
+import { Tone } from "@shopify/polaris/build/ts/src/components/Badge";
+
+export const items: { id: number; name: string }[] = [
+  { id: 1, name: "remix.run" },
+  { id: 2, name: "React" },
+  { id: 3, name: "express" },
+  { id: 4, name: "nodejs" },
+  { id: 5, name: "MongoDb" },
+  { id: 6, name: "sqlite" },
+  { id: 7, name: "mysql" },
+  { id: 8, name: "postgresql" },
+  { id: 9, name: "prisma" },
+  { id: 10, name: "xata" },
+  { id: 11, name: "fly.io" },
+  { id: 12, name: "heroku" },
+  { id: 13, name: "google cloud run" },
+  { id: 14, name: "Polaris" },
+  { id: 15, name: "metaobjects" },
+  { id: 16, name: "rest api" },
+  { id: 17, name: "graphql api" },
+  { id: 18, name: "ajax api" },
+  { id: 19, name: "admin api" },
+  { id: 20, name: "storefront api" },
+];
+
+export const uniqueTones: Tone[] = [
+  "success",
+  "attention",
+  "attention-strong",
+  "read-only",
+  "warning-strong",
+  "success-strong",
+  "enabled",
+  "info-strong",
+  "info",
+  "new",
+  "warning",
+];
 export const clients: Clinet[] = [
   {
     id: "1",
@@ -171,3 +209,4 @@ Ed`,
     client: clients[2]
   },
 ];
+

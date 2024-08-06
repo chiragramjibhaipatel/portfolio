@@ -4,6 +4,12 @@ type Testimonial = {
   profilePhoto: string;
 };
 
+type Clinet ={
+  id: string;
+  name?: string;
+  company?: string;
+  about?: string;
+} | undefined;
 //create type for tags
 
 //create types for data
@@ -14,8 +20,6 @@ type Data = {
   start: string;
   end: string;
   logo: {url: string; altText: string};
-  client: string;
-  company: string;
   shop: string;
   status: string;
   testimonial: Testimonial;
@@ -24,4 +28,5 @@ type Data = {
   solution: string;
   hurdles: string;
   tools: string[];
+  client?: Clinet;
 };

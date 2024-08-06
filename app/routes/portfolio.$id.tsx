@@ -26,12 +26,12 @@ export default function Welcome() {
           <BlockStack gap={"150"}>
             <InlineStack blockAlign="end" gap={"100"}>
               <Text variant="headingLg" as={"span"}>
-                {projects.client}
+                {projects.client?.name}
               </Text>
-              <div style={{ fontStyle: "italic" }}>- {projects.company}</div>
+              <div style={{ fontStyle: "italic" }}>- {projects.client?.company}</div>
             </InlineStack>
             <InlineStack gap={"100"}>
-              <StarRatings rating={projects.testimonial.rating} />
+              <div style={{ fontStyle: "italic" }}>- {projects.client?.about}</div>
             </InlineStack>
           </BlockStack>
         </InlineStack>

@@ -54,11 +54,11 @@ function Testimonial({ item }: { item: Data }) {
       <BlockStack gap={"200"} align="space-evenly">
         <BlockStack gap={"200"}>
           <InlineStack gap={"200"}>
-            <Avatar customer size="xl" name={item.client} />
+            <Avatar customer size="xl" name={item.client?.name} />
             <BlockStack>
-              <Text variant="bodyMd" children={item.client} as={"p"}></Text>
+              <Text variant="bodyMd" children={item.client?.name} as={"p"}></Text>
               <Text variant="bodySm" as={"span"}>
-                <div style={{ fontStyle: "italic" }}>{item.company}</div>
+                <div style={{ fontStyle: "italic" }}>{item.client?.company}</div>
               </Text>
             </BlockStack>
           </InlineStack>

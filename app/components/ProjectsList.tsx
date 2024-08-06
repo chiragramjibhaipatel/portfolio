@@ -12,7 +12,7 @@ export function ProjectsList({ data }: { data: Data[]; }) {
         renderItem={(item) => {
           const { id, title, description, shop, client, logo } = item;
           const media = (
-            <Avatar customer size="md" name={client} source={logo} />
+            <Avatar customer size="md" name={client?.name} source={logo.url} />
           );
           return (
             <ResourceItem

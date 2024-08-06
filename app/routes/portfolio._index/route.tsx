@@ -1,4 +1,4 @@
-import { Testimonials } from './../../components/Testimonials';
+import { Testimonials } from "./../../components/Testimonials";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import en from "@shopify/polaris/locales/en.json";
@@ -14,11 +14,10 @@ import {
   Text,
 } from "@shopify/polaris";
 import { login } from "../../shopify.server";
-import { data } from "../../data/custom_data";
+import { data, items, uniqueTones } from "../../data/custom_data";
 import { ProjectsList } from "~/components/ProjectsList";
-import  "blaze-slider/dist/blaze.css";
-import './styles.css'
-
+import "blaze-slider/dist/blaze.css";
+import "./styles.css";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -31,6 +30,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Portfolio() {
+  
 
   return (
     <AppProvider i18n={en}>
@@ -69,26 +69,14 @@ export default function Portfolio() {
                     </Layout.Section>
                     <Layout.Section>
                       <InlineStack gap={"100"}>
-                        <Badge tone="success">remix.run</Badge>
-                        <Badge tone="attention">React</Badge>
-                        <Badge tone="attention">express</Badge>
-                        <Badge tone="attention">nodejs</Badge>
-                        <Badge tone="attention-strong">MongoDb</Badge>
-                        <Badge tone="read-only">sqlite</Badge>
-                        <Badge tone="attention-strong">mysql</Badge>
-                        <Badge tone="warning-strong">postgresql</Badge>
-                        <Badge tone="success-strong">prisma</Badge>
-                        <Badge tone="success">xata</Badge>
-                        <Badge tone="attention-strong">fly.io</Badge>
-                        <Badge tone="attention-strong">heroku</Badge>
-                        <Badge tone="enabled">google cloud run</Badge>
-                        <Badge tone="info-strong">Polaris</Badge>
-                        <Badge tone="attention-strong">metaobjects</Badge>
-                        <Badge tone="info">rest api</Badge>
-                        <Badge tone="new">graphql api</Badge>
-                        <Badge tone="info-strong">ajax api</Badge>
-                        <Badge tone="attention">admin api</Badge>
-                        <Badge tone="warning">storefront api</Badge>
+                        {items.map((item, index) => (
+                          <Badge
+                            key={item.id}
+                            tone={uniqueTones[index % uniqueTones.length]}
+                          >
+                            {item.name}
+                          </Badge>
+                        ))}
                       </InlineStack>
                     </Layout.Section>
                   </Layout>
@@ -104,6 +92,3 @@ export default function Portfolio() {
     </AppProvider>
   );
 }
-
-    
-  

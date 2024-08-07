@@ -45,12 +45,11 @@ export default function ClientsPage() {
 
   return (
     <Page>
-      <TitleBar title="Clients 1" />
       <Layout>
         <Layout.AnnotatedSection
-          id="clients"
-          title="Manage all clients"
-          description="Add/Update/Delete existing list of clients and the stores connected to them"
+          id="all_clients"
+          title="All Clients"
+          description="Add/Update/Delete your clients and the stores connected to them"
         >
           <Card>
             <ResourceList
@@ -61,7 +60,7 @@ export default function ClientsPage() {
               selectedItems={selectedItems}
               onSelectionChange={setSelectedItems}
               selectable
-              alternateTool={<Link url="/app/clients/aaa">Add New</Link>}
+              alternateTool={<Link url="/app/clients/add">Add</Link>}
               bulkActions={bulkActions}
             ></ResourceList>
           </Card>

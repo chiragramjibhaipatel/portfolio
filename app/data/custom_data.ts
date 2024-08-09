@@ -50,7 +50,6 @@ export const clients: Clinet[] = [
     company: "LocalCart",
     about: "",
   },
-  ,
   {
     id: "2",
     name: "Cory Mosley",

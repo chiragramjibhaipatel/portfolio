@@ -24,8 +24,20 @@ model Session {
   locale         String?
   collaborator   Boolean?  @default(false)
   emailVerified  Boolean?  @default(false)
-  xata_id        String    @unique(map: "Session__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  xata_version   Int       @default(0)
   xata_createdat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_id        String    @unique(map: "Session__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_version   Int       @default(0)
+}
+
+model Client {
+  id             String   @id @default(cuid())
+  name           String
+  company        String?
+  email          String?
+  about          String?
+  xata_id        String   @unique(map: "Client__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int      @default(0)
+  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
 }

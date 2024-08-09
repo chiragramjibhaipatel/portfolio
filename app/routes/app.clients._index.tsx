@@ -9,22 +9,33 @@ import {
   ResourceListProps,
   Link,
 } from "@shopify/polaris";
-import { clients } from "~/data/custom_data";
 import { useState } from "react";
 import { DeleteIcon } from "@shopify/polaris-icons";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { authenticate } from "~/shopify.server";
+import db from "~/db.server";
+import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-  return {};
+  const {session}  = await authenticate.admin(request);
+  const clients = await db.client.findMany({
+    where:{
+      sessionId: session.id
+    },
+    select:{
+      id: true,
+      name: true,
+      company: true
+    }
+  });
+  return {clients};
 }
 
 export default function ClientsPage() {
+  const {clients} = useLoaderData<typeof loader>();
   const [selectedItems, setSelectedItems] = useState<
     ResourceListProps["selectedItems"]
   >([]);
-  let data = clients;
 
     const bulkActions = [
       {
@@ -35,7 +46,7 @@ export default function ClientsPage() {
       },
     ];
 
-  const emptyStateMarkup = !data.length ? (
+  const emptyStateMarkup = !clients.length ? (
     <EmptyState
       heading="There is no client in the database"
       action={{ content: "Add Client" }}
@@ -60,7 +71,7 @@ export default function ClientsPage() {
             <ResourceList
               emptyState={emptyStateMarkup}
               resourceName={{ singular: "client", plural: "clients" }}
-              items={data}
+              items={clients}
               renderItem={renderItem}
               selectedItems={selectedItems}
               onSelectionChange={setSelectedItems}
@@ -77,15 +88,22 @@ export default function ClientsPage() {
 
 function renderItem(item: any) {
   const { id, name, company } = item;
-  return (
+const shortcutActions = id
+  ? [{ content: "View client", url: `/app/clients/${id}` }]
+  : undefined;  return (
     <ResourceItem
       id={id}
       url="#"
+      shortcutActions={shortcutActions}
+      persistActions
       accessibilityLabel={`View details for ${name}`}
       name={name}
     >
       <Text variant="bodyMd" fontWeight="bold" as="h3">
-        {name} - <span style={{fontStyle: "italic", fontWeight:"300"}}>{company}</span>
+        {name} -{" "}
+        <span style={{ fontStyle: "italic", fontWeight: "300" }}>
+          {company}
+        </span>
       </Text>
     </ResourceItem>
   );

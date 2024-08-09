@@ -28,6 +28,8 @@ model Session {
   xata_id        String    @unique(map: "Session__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
   xata_version   Int       @default(0)
+
+  Client Client[]
 }
 
 model Client {
@@ -36,6 +38,8 @@ model Client {
   company        String?
   email          String?
   about          String?
+  sessionId      String
+  session        Session @relation(fields: [sessionId], references: [id])
   xata_id        String   @unique(map: "Client__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_version   Int      @default(0)
   xata_createdat DateTime @default(now()) @db.Timestamptz(6)

@@ -9,11 +9,16 @@ import {
   ResourceListProps,
   Link,
 } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
 import { clients } from "~/data/custom_data";
 import { useState } from "react";
 import { DeleteIcon } from "@shopify/polaris-icons";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { authenticate } from "~/shopify.server";
 
+export const loader = async ({request}: LoaderFunctionArgs) => {
+  await authenticate.admin(request);
+  return {};
+}
 
 export default function ClientsPage() {
   const [selectedItems, setSelectedItems] = useState<

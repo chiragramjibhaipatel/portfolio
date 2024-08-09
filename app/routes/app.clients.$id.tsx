@@ -13,23 +13,50 @@ import {
   TextField,
 } from "@shopify/polaris";
 import { EditIcon } from "@shopify/polaris-icons";
-import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { z } from "zod";
 import { useFetcher, useLoaderData } from "@remix-run/react";
-
+import { authenticate } from "~/shopify.server";
+import db from "../db.server"
+import { useState } from "react";
 //create schema for new client
 const ClientSchema = z.object({
   name: z.string().min(3, {message: "Name must be at least 3 characters long"}),
-  company: z.string().min(3, {message: "Company must be at least 3 characters long"}),
-  about: z.string().optional()
+  company: z.string().min(3, {message: "Company must be at least 3 characters long"}).optional(),
+  about: z.string().optional(),
+  email: z.string().email().optional()
 })
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  console.log("params", params);
-  return json({ params });
+type ClientSchemaType = z.infer<typeof ClientSchema>;
+
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const {session} = await authenticate.admin(request);
+  console.log("SessionId: ", session.id);
+  
+  const { id } = params;
+  if(id === "add"){
+    let client : ClientSchemaType = {name: "Eugen", company: "", about: "", email: ""};
+    return { client };
+  }
+  console.log("Existing Client id: ", id);
+  //fetch client data from database
+  const client = await db.client.findUnique({
+    where:{
+      id:id,
+      sessionId: session.id
+    },
+    select:{
+      name: true,
+      company: true,
+      about: true
+    }
+  })
+  console.log("Client: ", client);
+  return { client };
 };
 
 export const action = async ({request, params} : ActionFunctionArgs)=>{
+  const {session} =await authenticate.admin(request);
   console.log("params action", params);
   const formData = await request.json();
   const result = ClientSchema.safeParse(formData);
@@ -38,20 +65,44 @@ export const action = async ({request, params} : ActionFunctionArgs)=>{
     return json({status: "error", errors: result.error.flatten()} as const, {status: 400});
   }
 
-  const {name, company, about} = result.data;
-  return json({status: "success", data: {name, company, about}});
+  const {name, company, about, email} = result.data;
+  const client = await db.client.create({
+    data:{
+      name,
+      company,
+      about,
+      email,
+      sessionId: session.id,
+    }
+  });
+  return redirect(`/app/clients/${client.id}`);
+  
+
+
+  return {status: "success", data: {name:"new", company, about}};
 } 
 
 export default function NewClient() {
-  const data = useLoaderData<typeof loader>();
+  let data = useLoaderData<typeof loader>();
+  const [clientData, setClientData] = useState(data?.client ?? null);
+  console.log("loader data: ", data);
   const fetcher = useFetcher();
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
-  console.log("actionData", fetcher);
   function handleSubmit(): void {
     fetcher.submit(
-      { name: "", company: "", about: "" },
+      clientData,
       { method: "post", encType: "application/json" },
     );
+  }
+
+  const handleClientChange = (value: string, id: string) => {
+    console.log("value: ", value, "id: ", id);
+    setClientData((prev) => {
+      return {
+        ...prev,
+        [id]: value,
+      };
+    });
   }
 
   return (
@@ -71,17 +122,35 @@ export default function NewClient() {
             <BlockStack gap={"200"}>
               <Card>
                 <FormLayout>
-                  <TextField label="Name" autoComplete="off"></TextField>
-                  <TextField label="Company" autoComplete="off"></TextField>
+                  <TextField
+                    label="Name"
+                    id="name"
+                    autoComplete="off"
+                    onChange={handleClientChange}
+                    value={clientData?.name}
+                  ></TextField>
+                  <TextField
+                    label="Company"
+                    id="company"
+                    autoComplete="off"
+                    value={clientData?.company ?? ""}
+                    onChange={handleClientChange}
+                  ></TextField>
                   <TextField
                     label="Email"
+                    id="email"
                     autoComplete="off"
                     type="email"
+                    value={clientData?.email ?? ""}
+                    onChange={handleClientChange}
                   ></TextField>
                   <TextField
                     label="About"
+                    id="about"
                     autoComplete="off"
                     multiline={6}
+                    value={clientData?.about ?? ""}
+                    onChange={handleClientChange}
                   ></TextField>
                 </FormLayout>
               </Card>

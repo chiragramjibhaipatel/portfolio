@@ -16,3 +16,8 @@ yarn.lock
 /extensions/*/dist
 .env.portfolio-production
 .env.portfolio-dev
+.idea/dbnavigator.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/modules.xml
+.idea/portfolio.iml
+.idea/vcs.xml

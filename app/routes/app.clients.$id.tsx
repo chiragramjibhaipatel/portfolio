@@ -15,31 +15,32 @@ import {
 import { EditIcon } from "@shopify/polaris-icons";
 import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { z } from "zod";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData} from "@remix-run/react";
 import { authenticate } from "~/shopify.server";
 import db from "../db.server"
-import { useState } from "react";
-//create schema for new client
+import {useEffect, useState} from "react";
+
 const ClientSchema = z.object({
   name: z.string().min(3, {message: "Name must be at least 3 characters long"}),
-  company: z.string().min(3, {message: "Company must be at least 3 characters long"}).optional(),
-  about: z.string().optional(),
-  email: z.string().email().optional()
+  company: z.string().min(3, {message: "Company must be at least 3 characters long"}).nullable(),
+  about: z.string().nullable().optional(),
+  email: z.string().email().nullable().optional()
 })
 
-type ClientSchemaType = z.infer<typeof ClientSchema>;
+// Define the type for form errors
+type FormErrors = {
+  formErrors?: string[];
+  fieldErrors?: Record<string, string[]>;
+};
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const {session} = await authenticate.admin(request);
-  console.log("SessionId: ", session.id);
-  
+
   const { id } = params;
   if(id === "add"){
-    let client : ClientSchemaType = {name: "Eugen", company: "", about: "", email: ""};
-    return { client };
+    return json({client: null});
   }
   console.log("Existing Client id: ", id);
-  //fetch client data from database
   const client = await db.client.findUnique({
     where:{
       id:id,
@@ -48,11 +49,15 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     select:{
       name: true,
       company: true,
-      about: true
+      about: true,
+      email: true
     }
   })
+  if(!client){
+    throw new Response("Client not found", {status: 404});
+  }
   console.log("Client: ", client);
-  return { client };
+  return json({ client });
 };
 
 export const action = async ({request, params} : ActionFunctionArgs)=>{
@@ -62,33 +67,72 @@ export const action = async ({request, params} : ActionFunctionArgs)=>{
   const result = ClientSchema.safeParse(formData);
 
   if(!result.success){
-    return json({status: "error", errors: result.error.flatten()} as const, {status: 400});
+    return json({status: "error", errors: result.error.flatten()}, {status: 400});
   }
 
   const {name, company, about, email} = result.data;
-  const client = await db.client.create({
-    data:{
-      name,
-      company,
-      about,
-      email,
-      sessionId: session.id,
-    }
-  });
-  return redirect(`/app/clients/${client.id}`);
-  
-
-
-  return {status: "success", data: {name:"new", company, about}};
-} 
+  let client;
+  if(params.id === "add"){
+    console.log("Creating new client");
+    client = await db.client.create({
+      data:{
+        name,
+        company,
+        about,
+        email,
+        sessionId: session.id,
+      }
+    });
+    return redirect(`/app/clients/${client.id}`);
+  } else {
+    console.log("Updating client: ", params.id);
+    client = await db.client.update({
+      where:{
+        id: params.id,
+        sessionId: session.id
+      },
+      data:{
+        name,
+        company,
+        about,
+        email,
+      },
+      select:{
+        name: true,
+        company: true,
+        about: true,
+        email: true
+      }
+    });
+    return json({status: "success", client}, {status: 200});
+  }
+}
 
 export default function NewClient() {
   let data = useLoaderData<typeof loader>();
-  const [clientData, setClientData] = useState(data?.client ?? null);
-  console.log("loader data: ", data);
+  const [clientData, setClientData] = useState(data?.client );
+  const [isNew, setIsNew] = useState(true);
+  const [formErrors, setFormErrors] = useState<FormErrors | undefined>(undefined);
   const fetcher = useFetcher();
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
+
+  useEffect(() => {
+    if(window.location.pathname.endsWith("/add")){
+      setIsNew(true);
+    } else {
+      setIsNew(false);
+    }
+  }, [fetcher]);
+
   function handleSubmit(): void {
+    const result = ClientSchema.safeParse(clientData);
+    if(!result.success){
+      console.log("Errors: ", result.error.flatten());
+      setFormErrors(result.error.flatten());
+      return;
+    }
+    setFormErrors(undefined);
+
     fetcher.submit(
       clientData,
       { method: "post", encType: "application/json" },
@@ -97,6 +141,7 @@ export default function NewClient() {
 
   const handleClientChange = (value: string, id: string) => {
     console.log("value: ", value, "id: ", id);
+    // @ts-ignore
     setClientData((prev) => {
       return {
         ...prev,
@@ -107,11 +152,11 @@ export default function NewClient() {
 
   return (
     <Page
-      title="Add new client"
+      title={isNew ? "Add New Client" : "Edit Client"}
       backAction={{ content: "All Clients", url: "/app/clients" }}
       primaryAction={{
         content: "Save",
-        disabled: false,
+        disabled: JSON.stringify(data.client) === JSON.stringify(clientData),
         loading: formIsLoading,
         onAction: handleSubmit,
       }}
@@ -127,7 +172,9 @@ export default function NewClient() {
                     id="name"
                     autoComplete="off"
                     onChange={handleClientChange}
-                    value={clientData?.name}
+                    value={clientData?.name }
+                    requiredIndicator={true}
+                    error={formErrors?.fieldErrors?.name?.[0]}
                   ></TextField>
                   <TextField
                     label="Company"
@@ -135,6 +182,7 @@ export default function NewClient() {
                     autoComplete="off"
                     value={clientData?.company ?? ""}
                     onChange={handleClientChange}
+                    error={formErrors?.fieldErrors?.company?.[0]}
                   ></TextField>
                   <TextField
                     label="Email"
@@ -143,6 +191,7 @@ export default function NewClient() {
                     type="email"
                     value={clientData?.email ?? ""}
                     onChange={handleClientChange}
+                    error={formErrors?.fieldErrors?.email?.[0]}
                   ></TextField>
                   <TextField
                     label="About"
@@ -151,6 +200,7 @@ export default function NewClient() {
                     multiline={6}
                     value={clientData?.about ?? ""}
                     onChange={handleClientChange}
+                    error={formErrors?.fieldErrors?.about?.[0]}
                   ></TextField>
                 </FormLayout>
               </Card>
@@ -176,17 +226,19 @@ export default function NewClient() {
           <Layout.Section variant="oneThird">
             <FormLayout>
               <DropZone></DropZone>
-              <Card>
-                <Text as="h2" variant="bodyMd">
-                  Tasks:
-                </Text>
-                <Box paddingBlockStart={"200"}>
-                  <List>
-                    <List.Item>task 1</List.Item>
-                    <List.Item>task 2</List.Item>
-                  </List>
-                </Box>
-              </Card>
+              {!isNew && (
+                <Card>
+                  <Text as="h2" variant="bodyMd">
+                    Tasks:
+                  </Text>
+                  <Box paddingBlockStart={"200"}>
+                    <List>
+                      <List.Item>task 1</List.Item>
+                      <List.Item>task 2</List.Item>
+                    </List>
+                  </Box>
+                </Card>
+              )}
             </FormLayout>
           </Layout.Section>
         </Layout>

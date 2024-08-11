@@ -5,26 +5,27 @@ import {
   Card,
   DropZone,
   FormLayout,
-  InlineGrid,
+  InlineGrid, InlineStack,
   Layout,
   List,
-  Page,
+  Page, Tag,
   Text,
   TextField,
 } from "@shopify/polaris";
-import { EditIcon } from "@shopify/polaris-icons";
-import { ActionFunctionArgs, json, LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { z } from "zod";
-import { useFetcher, useLoaderData} from "@remix-run/react";
-import { authenticate } from "~/shopify.server";
+import {EditIcon} from "@shopify/polaris-icons";
+import {ActionFunctionArgs, json, LoaderFunctionArgs, redirect} from "@remix-run/node";
+import {z} from "zod";
+import {useFetcher, useLoaderData} from "@remix-run/react";
+import {authenticate} from "~/shopify.server";
 import db from "../db.server"
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 
 const ClientSchema = z.object({
   name: z.string().min(3, {message: "Name must be at least 3 characters long"}),
   company: z.string().min(3, {message: "Company must be at least 3 characters long"}).nullable(),
   about: z.string().nullable().optional(),
-  email: z.string().email().nullable().optional()
+  email: z.string().email().nullable().optional(),
+  stores: z.array(z.string()).optional(),
 })
 
 // Define the type for form errors
@@ -33,75 +34,79 @@ type FormErrors = {
   fieldErrors?: Record<string, string[]>;
 };
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({request, params}: LoaderFunctionArgs) => {
   const {session} = await authenticate.admin(request);
 
-  const { id } = params;
-  if(id === "add"){
+  const {id} = params;
+  if (id === "add") {
     return json({client: null});
   }
   console.log("Existing Client id: ", id);
   const client = await db.client.findUnique({
-    where:{
-      id:id,
+    where: {
+      id: id,
       sessionId: session.id
     },
-    select:{
+    select: {
       name: true,
       company: true,
       about: true,
-      email: true
+      email: true,
+      stores: true
     }
   })
-  if(!client){
+  if (!client) {
     throw new Response("Client not found", {status: 404});
   }
   console.log("Client: ", client);
-  return json({ client });
+  return json({client});
 };
 
-export const action = async ({request, params} : ActionFunctionArgs)=>{
-  const {session} =await authenticate.admin(request);
+export const action = async ({request, params}: ActionFunctionArgs) => {
+  const {session} = await authenticate.admin(request);
   console.log("params action", params);
   const formData = await request.json();
   const result = ClientSchema.safeParse(formData);
 
-  if(!result.success){
+  if (!result.success) {
     return json({status: "error", errors: result.error.flatten()}, {status: 400});
   }
 
-  const {name, company, about, email} = result.data;
+  const {name, company, about, email, stores} = result.data;
   let client;
-  if(params.id === "add"){
+  if (params.id === "add") {
     console.log("Creating new client");
     client = await db.client.create({
-      data:{
+      data: {
         name,
         company,
         about,
         email,
         sessionId: session.id,
+        stores: stores
       }
     });
     return redirect(`/app/clients/${client.id}`);
   } else {
     console.log("Updating client: ", params.id);
     client = await db.client.update({
-      where:{
+      where: {
         id: params.id,
         sessionId: session.id
       },
-      data:{
+      data: {
         name,
         company,
         about,
         email,
+        stores: stores
       },
-      select:{
+      select: {
         name: true,
         company: true,
         about: true,
-        email: true
+        email: true,
+        stores: true
       }
     });
     return json({status: "success", client}, {status: 200});
@@ -110,14 +115,17 @@ export const action = async ({request, params} : ActionFunctionArgs)=>{
 
 export default function NewClient() {
   let data = useLoaderData<typeof loader>();
-  const [clientData, setClientData] = useState(data?.client );
+  const [clientData, setClientData] = useState(data?.client);
   const [isNew, setIsNew] = useState(true);
   const [formErrors, setFormErrors] = useState<FormErrors | undefined>(undefined);
   const fetcher = useFetcher();
+  const [storeUrl, setStoreUrl] = useState<string | undefined>()
+  const [storeUrlFocus, setStoreUrlFocus] = useState<boolean | undefined>()
+
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
 
   useEffect(() => {
-    if(window.location.pathname.endsWith("/add")){
+    if (window.location.pathname.endsWith("/add")) {
       setIsNew(true);
     } else {
       setIsNew(false);
@@ -126,7 +134,7 @@ export default function NewClient() {
 
   function handleSubmit(): void {
     const result = ClientSchema.safeParse(clientData);
-    if(!result.success){
+    if (!result.success) {
       console.log("Errors: ", result.error.flatten());
       setFormErrors(result.error.flatten());
       return;
@@ -135,7 +143,7 @@ export default function NewClient() {
 
     fetcher.submit(
       clientData,
-      { method: "post", encType: "application/json" },
+      {method: "post", encType: "application/json"},
     );
   }
 
@@ -150,10 +158,48 @@ export default function NewClient() {
     });
   }
 
+  function handleAddStoreUrl() {
+    setClientData((prev) => {
+      if(prev === null){
+        return {
+          stores: [storeUrl]
+        }
+      }
+      return {
+        ...prev,
+        stores: [...new Set([...prev.stores, storeUrl])]
+      }
+    });
+    setStoreUrl("");
+    setStoreUrlFocus(true)
+
+  }
+
+  function handleStoreUrlChange(value: string) {
+    setStoreUrl(value);
+  }
+
+  const handleRemoveStoreUrl = useCallback(
+    (store: string) => () => {
+      setClientData((prev) => {
+        if(prev === null){
+          return {
+            stores: []
+          }
+        }
+        return {
+          ...prev,
+          stores: prev.stores.filter(s => s !== store)
+        }
+      });
+    },
+    [],
+  );
+
   return (
     <Page
       title={isNew ? "Add New Client" : "Edit Client"}
-      backAction={{ content: "All Clients", url: "/app/clients" }}
+      backAction={{content: "All Clients", url: "/app/clients"}}
       primaryAction={{
         content: "Save",
         disabled: JSON.stringify(data.client) === JSON.stringify(clientData),
@@ -172,7 +218,7 @@ export default function NewClient() {
                     id="name"
                     autoComplete="off"
                     onChange={handleClientChange}
-                    value={clientData?.name }
+                    value={clientData?.name}
                     requiredIndicator={true}
                     error={formErrors?.fieldErrors?.name?.[0]}
                   ></TextField>
@@ -206,19 +252,22 @@ export default function NewClient() {
               </Card>
               <Card>
                 <FormLayout>
-                  <InlineGrid columns="1fr auto">
-                    <Text as="h2" variant="headingSm">
-                      Stores
-                    </Text>
-                    <Button
-                      accessibilityLabel="Manage stores"
-                      icon={EditIcon}
-                    ></Button>
-                  </InlineGrid>
-                  <List>
-                    <List.Item>www.storeone.com</List.Item>
-                    <List.Item>www.storetwo.com</List.Item>
-                  </List>
+                    <TextField label="Store Url"
+                               focused={storeUrlFocus}
+                               autoComplete="off"
+                               value={storeUrl}
+                               onBlur={() => setStoreUrlFocus(false)}
+                               type={"url"}
+                               onChange={handleStoreUrlChange}
+                               connectedRight={<Button onClick={handleAddStoreUrl}
+                                                       disabled={storeUrl?.length === 0}>Add</Button>}
+                               prefix={"https://"}>
+                    </TextField>
+                    <InlineStack gap={"200"}>
+                      {clientData?.stores?.map(store => (
+                        <Tag onRemove={handleRemoveStoreUrl(store)} key={store} url={`https://${store}`}>{store}</Tag>
+                      ))}
+                    </InlineStack>
                 </FormLayout>
               </Card>
             </BlockStack>

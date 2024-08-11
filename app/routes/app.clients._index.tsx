@@ -9,17 +9,35 @@ import {
   ResourceListProps,
   Link,
 } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
-import { clients } from "~/data/custom_data";
 import { useState } from "react";
 import { DeleteIcon } from "@shopify/polaris-icons";
+import {json, LoaderFunctionArgs} from "@remix-run/node";
+import { authenticate } from "~/shopify.server";
+import db from "~/db.server";
+import {useLoaderData} from "@remix-run/react";
 
+export const loader = async ({request}: LoaderFunctionArgs) => {
+  let {session} = await authenticate.admin(request);
+  const clients = await db.client.findMany({
+  where: {
+    sessionId: session.id
+  },
+    select: {
+      id: true,
+      name: true,
+      company: true,
+      about: true,
+    }
+  })
+
+  return json({clients});
+}
 
 export default function ClientsPage() {
+  const {clients} = useLoaderData<typeof  loader>();
   const [selectedItems, setSelectedItems] = useState<
     ResourceListProps["selectedItems"]
   >([]);
-  let data = clients;
 
     const bulkActions = [
       {
@@ -30,10 +48,10 @@ export default function ClientsPage() {
       },
     ];
 
-  const emptyStateMarkup = !data.length ? (
+  const emptyStateMarkup = !clients.length ? (
     <EmptyState
       heading="There is no client in the database"
-      action={{ content: "Add Client" }}
+      action={{ content: "Add Client", url: "/app/clients/add" }}
       image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
     >
       <p>
@@ -55,7 +73,7 @@ export default function ClientsPage() {
             <ResourceList
               emptyState={emptyStateMarkup}
               resourceName={{ singular: "client", plural: "clients" }}
-              items={data}
+              items={clients}
               renderItem={renderItem}
               selectedItems={selectedItems}
               onSelectionChange={setSelectedItems}

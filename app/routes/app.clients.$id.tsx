@@ -159,14 +159,19 @@ export default function NewClient() {
 
   function handleAddStoreUrl() {
     setClientData((prev) => {
-      if(prev === null){
+      if (prev === null) {
         return {
+          stores: [storeUrl]
+        }
+      } else if (!prev.stores) {
+        return {
+          ...prev,
           stores: [storeUrl]
         }
       }
       return {
         ...prev,
-        stores: [...new Set([...prev.stores, storeUrl])]
+        stores: [...new Set([...prev?.stores, storeUrl])]
       }
     });
     setStoreUrl("");

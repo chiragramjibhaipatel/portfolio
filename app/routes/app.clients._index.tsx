@@ -51,7 +51,7 @@ export default function ClientsPage() {
   const emptyStateMarkup = !clients.length ? (
     <EmptyState
       heading="There is no client in the database"
-      action={{ content: "Add Client" }}
+      action={{ content: "Add Client", url: "/app/clients/add" }}
       image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
     >
       <p>

@@ -5,24 +5,23 @@ import {
   Card,
   DropZone,
   FormLayout,
-  InlineGrid, InlineStack,
+  InlineStack,
   Layout,
   List,
   Page, Tag,
   Text,
   TextField,
 } from "@shopify/polaris";
-import {EditIcon} from "@shopify/polaris-icons";
 import {ActionFunctionArgs, json, LoaderFunctionArgs, redirect} from "@remix-run/node";
 import {z} from "zod";
 import {useFetcher, useLoaderData} from "@remix-run/react";
 import {authenticate} from "~/shopify.server";
 import db from "../db.server"
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 const ClientSchema = z.object({
   name: z.string().min(3, {message: "Name must be at least 3 characters long"}),
-  company: z.string().min(3, {message: "Company must be at least 3 characters long"}).nullable(),
+  company: z.string().min(3, {message: "Company must be at least 3 characters long"}).nullable().optional(),
   about: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
   stores: z.array(z.string()).optional(),

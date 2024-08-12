@@ -158,6 +158,7 @@ export default function NewClient() {
   }
 
   function handleAddStoreUrl() {
+    // @ts-ignore
     setClientData((prev) => {
       if (prev === null) {
         return {
@@ -185,6 +186,7 @@ export default function NewClient() {
 
   const handleRemoveStoreUrl = useCallback(
     (store: string) => () => {
+      // @ts-ignore
       setClientData((prev) => {
         if(prev === null){
           return {

@@ -5,8 +5,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { PortfolioBackground } from "./components/PortfolioBackbround";
-import { useEffect, useState } from "react";
+import {PortfolioBackground} from "./components/PortfolioBackbround";
+import {useEffect, useState} from "react";
+import faviconSvgUrl from "./assets/favicon.svg"
+import {LinksFunction} from "@remix-run/node";
+
+
+export const links: LinksFunction = () => {
+  return [
+    {rel: "icon", type: 'image/svg+xml', href: faviconSvgUrl}
+  ]
+}
 
 
 export default function App() {
@@ -21,23 +30,23 @@ export default function App() {
 
   return (
     <html>
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="preconnect" href="https://cdn.shopify.com/" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
-        />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {isPortfolio && <PortfolioBackground />}
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-      </body>
+    <head>
+      <meta charSet="utf-8"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1"/>
+      <link rel="preconnect" href="https://cdn.shopify.com/"/>
+      <link
+        rel="stylesheet"
+        href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
+      />
+      <Meta/>
+      <Links/>
+    </head>
+    <body>
+    {isPortfolio && <PortfolioBackground/>}
+    <Outlet/>
+    <ScrollRestoration/>
+    <Scripts/>
+    </body>
     </html>
   );
 }

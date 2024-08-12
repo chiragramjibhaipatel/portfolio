@@ -8,7 +8,22 @@ import {
 import {PortfolioBackground} from "./components/PortfolioBackbround";
 import {useEffect, useState} from "react";
 import faviconSvgUrl from "./assets/favicon.svg"
-import {LinksFunction} from "@remix-run/node";
+import {LinksFunction, MetaFunction} from "@remix-run/node";
+
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Chirag Ramjibhai Patel - Shopify Developer" },
+    {
+      property: "og:title",
+      content: "Chirag Ramjibhai Patel - Shopify Developer",
+    },
+    {
+      name: "description",
+      content: "I create custom shopify apps to make your life easier. Reach out to me for a 30 minute free consultation. We can discuss your project and see if we are a good fit.",
+    },
+  ];
+};
 
 
 export const links: LinksFunction = () => {

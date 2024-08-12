@@ -6,22 +6,21 @@ import {
   ResourceList,
   ResourceItem,
   EmptyState,
-  ResourceListProps,
-  Link,
+  Link, Tag, Button, InlineStack,
 } from "@shopify/polaris";
-import { useState } from "react";
-import { DeleteIcon } from "@shopify/polaris-icons";
+import {useEffect, useState} from "react";
+import {DeleteIcon} from "@shopify/polaris-icons";
 import {json, LoaderFunctionArgs} from "@remix-run/node";
-import { authenticate } from "~/shopify.server";
+import {authenticate} from "~/shopify.server";
 import db from "~/db.server";
-import {useLoaderData} from "@remix-run/react";
+import {useFetcher, useLoaderData} from "@remix-run/react";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   let {session} = await authenticate.admin(request);
   const clients = await db.client.findMany({
-  where: {
-    sessionId: session.id
-  },
+    where: {
+      sessionId: session.id
+    },
     select: {
       id: true,
       name: true,
@@ -33,33 +32,59 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   return json({clients});
 }
 
-export default function ClientsPage() {
-  const {clients} = useLoaderData<typeof  loader>();
-  const [selectedItems, setSelectedItems] = useState<
-    ResourceListProps["selectedItems"]
-  >([]);
+export const action = async ({request}: LoaderFunctionArgs) => {
+  let {session} = await authenticate.admin(request);
+  let {selectedItems} = await request.json();
+  console.log("Selected Items: ", selectedItems);
+  await db.client.deleteMany({
+    where: {
+      sessionId: session.id,
+      id: {
+        in: selectedItems
+      }
+    }
+  });
+  return json({status: "success"});
+}
 
-    const bulkActions = [
-      {
-        icon: DeleteIcon,
-        destructive: true,
-        content: "Delete customers",
-        onAction: () => console.log("Todo: implement bulk delete"),
-      },
-    ];
+
+export default function ClientsPage() {
+  const {clients} = useLoaderData<typeof loader>();
+  const [selectedItems, setSelectedItems] = useState<string[] | "All">([]);
+  let fetcher = useFetcher<typeof action>();
+  const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
+  console.log("Selected Items: ", selectedItems);
+
+  let handleDeleteClient = async () => {
+    fetcher.submit({selectedItems: selectedItems}, {
+      method: "POST", encType: "application/json",
+    })
+  };
+
+  useEffect(() => {
+    if (fetcher.data?.status === "success") {
+      setSelectedItems([]);
+    }
+  }, [fetcher.data]);
+
+  const bulkActions = [
+    {
+      icon: DeleteIcon,
+      destructive: true,
+      content: `Delete ${selectedItems.length} ${selectedItems.length > 1 ? "clients" : "client"}`,
+      onAction: handleDeleteClient,
+    },
+  ];
 
   const emptyStateMarkup = !clients.length ? (
-    <EmptyState
-      heading="There is no client in the database"
-      action={{ content: "Add Client", url: "/app/clients/add" }}
-      image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
-    >
-      <p>
-        You can add all the details of your current and past clients here. You
-        can also edit them afterworkds.
-      </p>
-    </EmptyState>
+    <EmptyStateMarkup/>
   ) : undefined;
+
+  const fetcherHandleAddClients = useFetcher({key: "addClients"});
+
+  function handleAddClients() {
+    fetcherHandleAddClients.load("/api/clients/add");
+  }
 
   return (
     <Page>
@@ -72,7 +97,7 @@ export default function ClientsPage() {
           <Card>
             <ResourceList
               emptyState={emptyStateMarkup}
-              resourceName={{ singular: "client", plural: "clients" }}
+              resourceName={{singular: "client", plural: "clients"}}
               items={clients}
               renderItem={renderItem}
               selectedItems={selectedItems}
@@ -80,7 +105,21 @@ export default function ClientsPage() {
               selectable
               alternateTool={<Link url="/app/clients/add">Add</Link>}
               bulkActions={bulkActions}
+              loading={formIsLoading}
             ></ResourceList>
+          </Card>
+        </Layout.AnnotatedSection>
+        <Layout.AnnotatedSection
+          id="add_clients"
+          title="Add Clients"
+          description="Add a new client to the database"
+        >
+          <Card>
+            <InlineStack align={"space-between"}>
+              <Text as={"h2"}>Add some clients</Text>
+              <Button variant={"primary"} onClick={handleAddClients}
+                      loading={["loading", "submitting"].includes(fetcherHandleAddClients.state)}>Add Client</Button>
+            </InlineStack>
           </Card>
         </Layout.AnnotatedSection>
       </Layout>
@@ -89,17 +128,33 @@ export default function ClientsPage() {
 }
 
 function renderItem(item: any) {
-  const { id, name, company } = item;
+  const {id, name, company} = item;
   return (
     <ResourceItem
       id={id}
       url="#"
       accessibilityLabel={`View details for ${name}`}
       name={name}
+      shortcutActions={[{content: "Edit", url: `/app/clients/${id}`}]}
+      verticalAlignment="leading"
     >
       <Text variant="bodyMd" fontWeight="bold" as="h3">
-        {name} - <span style={{fontStyle: "italic", fontWeight:"300"}}>{company}</span>
+        {name} - <span style={{fontStyle: "italic", fontWeight: "300"}}>{company}</span>
+        <div><Tag>tasks: 3</Tag></div>
       </Text>
     </ResourceItem>
   );
+}
+
+function EmptyStateMarkup() {
+  return <EmptyState
+    heading="There is no client in the database"
+    action={{content: "Add Client", url: "/app/clients/add"}}
+    image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
+  >
+    <p>
+      You can add all the details of your current and past clients here. You
+      can also edit them afterword.
+    </p>
+  </EmptyState>;
 }

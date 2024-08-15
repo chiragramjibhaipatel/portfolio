@@ -194,6 +194,7 @@ export default function NewClient() {
   }
 
   function handleSetImageUrl(imageUrl: string) {
+    // @ts-ignore
     setClientData((prev) => {
       return {
         ...prev,
@@ -325,7 +326,7 @@ function ClientImageUploader({imageUrl, handleSetImageUrl}: {
   handleSetImageUrl: (imageUrl: string) => void
 }) {
 
-  let fetcherFileUpload = useFetcher({key: "fileUpload"});
+  let fetcherFileUpload = useFetcher<{imageUrl: string}>({key: "fileUpload"});
   const fetcherFileUploadLoading = ["loading", "submitting"].includes(fetcherFileUpload.state);
 
   const [file, setFile] = useState<File>();

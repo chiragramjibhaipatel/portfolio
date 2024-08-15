@@ -10,7 +10,8 @@ import {
 } from "@shopify/polaris";
 import {useEffect, useState} from "react";
 import {DeleteIcon} from "@shopify/polaris-icons";
-import {json, LoaderFunctionArgs} from "@remix-run/node";
+import type { LoaderFunctionArgs} from "@remix-run/node";
+import {json} from "@remix-run/node";
 import {authenticate} from "~/shopify.server";
 import db from "~/db.server";
 import {useFetcher, useLoaderData} from "@remix-run/react";
@@ -26,7 +27,8 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
       name: true,
       company: true,
       about: true,
-    }
+    },
+    take: 5
   })
 
   return json({clients});
@@ -129,6 +131,7 @@ export default function ClientsPage() {
 
 function renderItem(item: any) {
   const {id, name, company} = item;
+  console.log("Item", item);
   return (
     <ResourceItem
       id={id}

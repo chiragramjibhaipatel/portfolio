@@ -83,7 +83,7 @@ export default function ClientsPage() {
   const fetcherHandleAddClients = useFetcher({key: "addClients"});
 
   function handleAddClients() {
-    fetcherHandleAddClients.load("/api/clients/add");
+    fetcherHandleAddClients.submit({}, {action: "/api/clients/add", method: "POST"});
   }
 
   return (

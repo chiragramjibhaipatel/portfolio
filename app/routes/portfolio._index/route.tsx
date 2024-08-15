@@ -1,4 +1,4 @@
-import {Testimonials} from "~/components/Testimonials";
+import {Testimonials, links as TestimonialLinks} from "~/components/Testimonials";
 import type {LoaderFunctionArgs} from "@remix-run/node";
 import {json, redirect} from "@remix-run/node";
 import en from "@shopify/polaris/locales/en.json";
@@ -22,6 +22,8 @@ import {ProjectsList} from "~/components/ProjectsList";
 import "blaze-slider/dist/blaze.css";
 import "./styles.css";
 import {LogoXIcon} from "@shopify/polaris-icons";
+
+export const links = () => [...TestimonialLinks];
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const url = new URL(request.url);

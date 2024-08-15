@@ -1,0 +1,13 @@
+.blaze-slider {
+  --slides-to-show: 3;
+}
+
+@media (max-width: 900px) {
+  .blaze-slider {
+    --slides-to-show: 2;
+  }
+}@media (max-width: 500px) {
+  .blaze-slider {
+    --slides-to-show: 1;
+  }
+}

@@ -41,6 +41,7 @@ model Client {
   sessionId      String
   session        Session  @relation(fields: [sessionId], references: [id])
   stores         String[]
+  imageUrl       String?
   xata_id        String   @unique(map: "Client__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_version   Int      @default(0)
   xata_createdat DateTime @default(now()) @db.Timestamptz(6)

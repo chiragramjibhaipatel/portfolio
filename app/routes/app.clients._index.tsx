@@ -1,16 +1,19 @@
 import {
+  Button,
   Card,
-  Layout,
-  Page,
-  Text,
-  ResourceList,
-  ResourceItem,
   EmptyState,
-  Link, Tag, Button, InlineStack,
+  InlineStack,
+  Layout,
+  Link,
+  Page,
+  ResourceItem,
+  ResourceList,
+  Tag,
+  Text,
 } from "@shopify/polaris";
 import {useEffect, useState} from "react";
 import {DeleteIcon} from "@shopify/polaris-icons";
-import type { LoaderFunctionArgs} from "@remix-run/node";
+import type {LoaderFunctionArgs} from "@remix-run/node";
 import {json} from "@remix-run/node";
 import {authenticate} from "~/shopify.server";
 import db from "~/db.server";
@@ -49,6 +52,18 @@ export const action = async ({request}: LoaderFunctionArgs) => {
   return json({status: "success"});
 }
 
+function EmptyStateMarkup() {
+  return (<EmptyState
+    heading="There is no client in the database"
+    action={{content: "Add Client", url: "/app/clients/add"}}
+    image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
+  >
+    <Text as={"p"}>
+      You can add all the details of your current and past clients here. You
+      can also edit them afterword.
+    </Text>
+  </EmptyState>);
+}
 
 export default function ClientsPage() {
   const {clients} = useLoaderData<typeof loader>();
@@ -147,17 +162,4 @@ function renderItem(item: any) {
       </Text>
     </ResourceItem>
   );
-}
-
-function EmptyStateMarkup() {
-  return <EmptyState
-    heading="There is no client in the database"
-    action={{content: "Add Client", url: "/app/clients/add"}}
-    image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
-  >
-    <p>
-      You can add all the details of your current and past clients here. You
-      can also edit them afterword.
-    </p>
-  </EmptyState>;
 }

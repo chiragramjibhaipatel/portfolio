@@ -359,7 +359,7 @@ function ClientImageUploader({imageUrl, handleSetImageUrl}: {
 
   const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
 
-  const fileUpload = !file && <DropZone.FileUpload actionTitle={"Upload"}/>;
+  const fileUpload = (!file && !imageUrl) && <DropZone.FileUpload actionTitle={"Upload"}/>;
   const uploadedFile = fetcherFileUploadLoading ?
     (
       <InlineStack blockAlign={"center"} align={"center"}>
@@ -385,13 +385,13 @@ function ClientImageUploader({imageUrl, handleSetImageUrl}: {
           <Text as="h2" variant="bodyMd">
             Logo/Image
           </Text>
-          {file && <Button onClick={toggleOpenFileDialog} variant={"plain"}>Change</Button>}
+          {(file || imageUrl) && <Button onClick={toggleOpenFileDialog} variant={"plain"}>Change</Button>}
         </InlineGrid>
         <DropZone disabled={fetcherFileUploadLoading} allowMultiple={false} onDrop={handleDropZoneDrop}
                   openFileDialog={openFileDialog}
                   onFileDialogClose={toggleOpenFileDialog}>
           {uploadedFile}
-          {!fetcherFileUploadLoading && fileUpload}
+          {fetcherFileUploadLoading && fileUpload}
         </DropZone>
       </BlockStack>
     </Card>

@@ -391,7 +391,7 @@ function ClientImageUploader({imageUrl, handleSetImageUrl}: {
                   openFileDialog={openFileDialog}
                   onFileDialogClose={toggleOpenFileDialog}>
           {uploadedFile}
-          {fetcherFileUploadLoading && fileUpload}
+          {fileUpload}
         </DropZone>
       </BlockStack>
     </Card>

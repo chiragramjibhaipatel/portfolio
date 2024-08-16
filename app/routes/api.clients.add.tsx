@@ -1,8 +1,9 @@
-import {json, LoaderFunctionArgs} from "@remix-run/node";
+import type {ActionFunctionArgs} from "@remix-run/node";
+import { json} from "@remix-run/node";
 import {authenticate} from "~/shopify.server";
 import db from "~/db.server";
 
-export const loader = async ({request}: LoaderFunctionArgs) => {
+export const action = async ({request}: ActionFunctionArgs) => {
   console.log("Inside clients add loader");
   const {session} = await authenticate.admin(request);
   await db.client.createMany({

@@ -8,6 +8,10 @@ import {
   Text,
 } from "@shopify/polaris";
 import { useBlazeSlider } from "react-blaze-slider";
+import blazeSliderCustomStylesUrl from "../assets/blaze-slider-custom.css?url"
+
+
+export const links = [{ rel: "stylesheet", href: blazeSliderCustomStylesUrl }];
 
 export function Testimonials({ data }: { data: Data[] }) {
   const ref = useBlazeSlider({

@@ -5,10 +5,13 @@ import {
   Card,
   DropZone,
   FormLayout,
+  InlineGrid,
   InlineStack,
   Layout,
   List,
-  Page, Tag,
+  Page,
+  Spinner,
+  Tag,
   Text,
   TextField,
 } from "@shopify/polaris";
@@ -25,6 +28,7 @@ const ClientSchema = z.object({
   about: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
   stores: z.array(z.string()).optional(),
+  imageUrl: z.string().nullable().optional()
 })
 
 // Define the type for form errors
@@ -51,7 +55,8 @@ export const loader = async ({request, params}: LoaderFunctionArgs) => {
       company: true,
       about: true,
       email: true,
-      stores: true
+      stores: true,
+      imageUrl: true
     }
   })
   if (!client) {
@@ -71,7 +76,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
     return json({status: "error", errors: result.error.flatten()}, {status: 400});
   }
 
-  const {name, company, about, email, stores} = result.data;
+  const {name, company, about, email, stores, imageUrl} = result.data;
   let client;
   if (params.id === "add") {
     console.log("Creating new client");
@@ -82,7 +87,8 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         about,
         email,
         sessionId: session.id,
-        stores: stores
+        stores,
+        imageUrl
       }
     });
     return redirect(`/app/clients/${client.id}`);
@@ -98,19 +104,22 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         company,
         about,
         email,
-        stores: stores
+        stores,
+        imageUrl
       },
       select: {
         name: true,
         company: true,
         about: true,
         email: true,
-        stores: true
+        stores: true,
+        imageUrl: true
       }
     });
     return json({status: "success", client}, {status: 200});
   }
 }
+
 
 export default function NewClient() {
   let data = useLoaderData<typeof loader>();
@@ -158,6 +167,7 @@ export default function NewClient() {
   }
 
   function handleAddStoreUrl() {
+    // @ts-ignore
     setClientData((prev) => {
       if (prev === null) {
         return {
@@ -183,10 +193,21 @@ export default function NewClient() {
     setStoreUrl(value);
   }
 
+  function handleSetImageUrl(imageUrl: string) {
+    // @ts-ignore
+    setClientData((prev) => {
+      return {
+        ...prev,
+        imageUrl
+      }
+    });
+  }
+
   const handleRemoveStoreUrl = useCallback(
     (store: string) => () => {
+      // @ts-ignore
       setClientData((prev) => {
-        if(prev === null){
+        if (prev === null) {
           return {
             stores: []
           }
@@ -256,29 +277,29 @@ export default function NewClient() {
               </Card>
               <Card>
                 <FormLayout>
-                    <TextField label="Store Url"
-                               focused={storeUrlFocus}
-                               autoComplete="off"
-                               value={storeUrl}
-                               onBlur={() => setStoreUrlFocus(false)}
-                               type={"url"}
-                               onChange={handleStoreUrlChange}
-                               connectedRight={<Button onClick={handleAddStoreUrl}
-                                                       disabled={storeUrl?.length === 0}>Add</Button>}
-                               prefix={"https://"}>
-                    </TextField>
-                    <InlineStack gap={"200"}>
-                      {clientData?.stores?.map(store => (
-                        <Tag onRemove={handleRemoveStoreUrl(store)} key={store} url={`https://${store}`}>{store}</Tag>
-                      ))}
-                    </InlineStack>
+                  <TextField label="Store Url"
+                             focused={storeUrlFocus}
+                             autoComplete="off"
+                             value={storeUrl}
+                             onBlur={() => setStoreUrlFocus(false)}
+                             type={"url"}
+                             onChange={handleStoreUrlChange}
+                             connectedRight={<Button onClick={handleAddStoreUrl}
+                                                     disabled={storeUrl?.length === 0}>Add</Button>}
+                             prefix={"https://"}>
+                  </TextField>
+                  <InlineStack gap={"200"}>
+                    {clientData?.stores?.map(store => (
+                      <Tag onRemove={handleRemoveStoreUrl(store)} key={store} url={`https://${store}`}>{store}</Tag>
+                    ))}
+                  </InlineStack>
                 </FormLayout>
               </Card>
             </BlockStack>
           </Layout.Section>
           <Layout.Section variant="oneThird">
             <FormLayout>
-              <DropZone></DropZone>
+              <ClientImageUploader imageUrl={clientData?.imageUrl} handleSetImageUrl={handleSetImageUrl}/>
               {!isNew && (
                 <Card>
                   <Text as="h2" variant="bodyMd">
@@ -297,5 +318,82 @@ export default function NewClient() {
         </Layout>
       </BlockStack>
     </Page>
+  );
+}
+
+function ClientImageUploader({imageUrl, handleSetImageUrl}: {
+  imageUrl?: string | null,
+  handleSetImageUrl: (imageUrl: string) => void
+}) {
+
+  let fetcherFileUpload = useFetcher<{imageUrl: string}>({key: "fileUpload"});
+  const fetcherFileUploadLoading = ["loading", "submitting"].includes(fetcherFileUpload.state);
+
+  const [file, setFile] = useState<File>();
+  const [openFileDialog, setOpenFileDialog] = useState(false);
+
+  const toggleOpenFileDialog = useCallback(
+    () => setOpenFileDialog((openFileDialog) => !openFileDialog),
+    [],
+  );
+
+  useEffect(() => {
+    if (fetcherFileUpload.state === "idle" && fetcherFileUpload.data?.imageUrl) {
+      console.log("File uploaded successfully", fetcherFileUpload
+        .data);
+      handleSetImageUrl(fetcherFileUpload.data.imageUrl);
+      fetcherFileUpload.load("/api/reset")
+    }
+  }, [fetcherFileUpload])
+
+  const handleDropZoneDrop = useCallback(
+    (_dropFiles: File[], acceptedFiles: File[], _rejectedFiles: File[]) => {
+      console.log("Accepted Files: ", acceptedFiles);
+      let formData = new FormData();
+      formData.append("file", acceptedFiles[0]);
+      fetcherFileUpload.submit(formData, {action: "/api/image/upload", method: "POST", encType: "multipart/form-data"});
+      setFile(acceptedFiles[0])
+    },
+    [],
+  );
+
+  const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
+
+  const fileUpload = !file && <DropZone.FileUpload actionTitle={"Upload"}/>;
+  const uploadedFile = fetcherFileUploadLoading ?
+    (
+      <InlineStack blockAlign={"center"} align={"center"}>
+        <Spinner accessibilityLabel="Image is being uploaded" size="small"/>
+      </InlineStack>
+    ) :
+    (
+      <InlineStack>
+        <img
+          style={{maxWidth: "100%", borderRadius: "7px"}}
+          src={
+            (file && validImageTypes.includes(file.type))
+              ? window.URL.createObjectURL(file)
+              : imageUrl ?? ""
+          }/>
+      </InlineStack>
+    );
+
+  return (
+    <Card>
+      <BlockStack gap={"100"}>
+        <InlineGrid columns="1fr auto">
+          <Text as="h2" variant="bodyMd">
+            Logo/Image
+          </Text>
+          {file && <Button onClick={toggleOpenFileDialog} variant={"plain"}>Change</Button>}
+        </InlineGrid>
+        <DropZone disabled={fetcherFileUploadLoading} allowMultiple={false} onDrop={handleDropZoneDrop}
+                  openFileDialog={openFileDialog}
+                  onFileDialogClose={toggleOpenFileDialog}>
+          {uploadedFile}
+          {!fetcherFileUploadLoading && fileUpload}
+        </DropZone>
+      </BlockStack>
+    </Card>
   );
 }

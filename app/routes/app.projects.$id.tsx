@@ -198,6 +198,7 @@ export default function AddProject() {
                     handleProjectChange={handleProjectChange}
                     clientId={projectData?.clientId}
                     allClients={loaderData.allClients}
+                    error={formErrors?.fieldErrors?.clientId?.[0]}
                   />
                 )}
                 

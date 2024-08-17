@@ -6,10 +6,12 @@ export function ClientSelect ({
     handleProjectChange,
     allClients,
     clientId,
+    error,
 }: {
     handleProjectChange: (value: string, id: string) => void;
     clientId: string;
     allClients: { id: string; name: string }[];
+    error: string;
 }) {
     const deselectedClients = useMemo (
 	() => [
@@ -63,6 +65,7 @@ export function ClientSelect ({
 	    prefix={<Icon source={SearchIcon} tone="base"/>}
 	    placeholder="Type to search"
 	    autoComplete="off"
+	    error={error}
 	/>
     );
     
@@ -84,6 +87,7 @@ export function ClientSelect ({
 		selected={selectedClients}
 		onSelect={updateClientSelection}
 		textField={textField}
+		
 	    />
     );
 }

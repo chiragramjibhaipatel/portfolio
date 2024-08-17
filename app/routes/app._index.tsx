@@ -1,15 +1,14 @@
-import {useEffect} from "react";
-import type {ActionFunctionArgs, LoaderFunctionArgs} from "@remix-run/node";
-import {json} from "@remix-run/node";
-import {useFetcher} from "@remix-run/react";
-import {Page,} from "@shopify/polaris";
-import {TitleBar, useAppBridge} from "@shopify/app-bridge-react";
-import {authenticate} from "../shopify.server";
-import {AdminProjectsList} from "~/components/admin_projects_list";
+import { useEffect } from "react";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
+import { Page } from "@shopify/polaris";
+import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { authenticate } from "../shopify.server";
+import { AdminProjectsList } from "~/components/AdminProjectsList";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
-
   return null;
 };
 
@@ -20,26 +19,26 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   ];
   const response = await admin.graphql(
     `#graphql
-      mutation populateProduct($input: ProductInput!) {
-        productCreate(input: $input) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
+        mutation populateProduct($input: ProductInput!) {
+            productCreate(input: $input) {
+                product {
+                    id
+                    title
+                    handle
+                    status
+                    variants(first: 10) {
+                        edges {
+                            node {
+                                id
+                                price
+                                barcode
+                                createdAt
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-        }
-      }`,
+        }`,
     {
       variables: {
         input: {
@@ -54,16 +53,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     responseJson.data!.productCreate!.product!.variants.edges[0]!.node!.id!;
   const variantResponse = await admin.graphql(
     `#graphql
-      mutation shopifyRemixTemplateUpdateVariant($input: ProductVariantInput!) {
-        productVariantUpdate(input: $input) {
-          productVariant {
-            id
-            price
-            barcode
-            createdAt
-          }
-        }
-      }`,
+        mutation shopifyRemixTemplateUpdateVariant($input: ProductVariantInput!) {
+            productVariantUpdate(input: $input) {
+                productVariant {
+                    id
+                    price
+                    barcode
+                    createdAt
+                }
+            }
+        }`,
     {
       variables: {
         input: {
@@ -103,11 +102,9 @@ export default function Index() {
 
   return (
     <Page>
-      <TitleBar title="Your Personal Portfolio">
-
-      </TitleBar>
+      <TitleBar title="Your Personal Portfolio"></TitleBar>
       <AdminProjectsList />
-
     </Page>
   );
 }
+

@@ -11,7 +11,100 @@ import {
   Text,
   TextField,
 } from "@shopify/polaris";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+let items = [
+  {
+    id: "341",
+    url: "#",
+    name: "Mae Jemison",
+    location: "Decatur, USA",
+    title: "Quantity Breaks",
+    description: "Shopify Plus, Shopify",
+    status: "Open",
+    client: {
+      name: "Eugen",
+      imageUrl:
+        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_1_80x80.png?v=1617631864",
+    },
+    shopifyPlan: "Shopify Plus",
+  },
+  {
+    id: "342",
+    url: "#",
+    name: "Neil Armstrong",
+    location: "Wapakoneta, USA",
+    title: "Space Exploration",
+    description: "Shopify Plus, Shopify",
+    status: "IN_PROGRESS",
+    client: {
+      name: "Buzz",
+      imageUrl:
+        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_2_80x80.png?v=1617631864",
+    },
+    shopifyPlan: "Shopify Advanced",
+  },
+  {
+    id: "343",
+    url: "#",
+    name: "Sally Ride",
+    location: "Encino, USA",
+    title: "STEM Education",
+    description: "Shopify Plus, Shopify",
+    status: "Done",
+    client: {
+      name: "Chris",
+      imageUrl:
+        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_3_80x80.png?v=1617631864",
+    },
+    shopifyPlan: "Shopify",
+  },
+  {
+    id: "344",
+    url: "#",
+    name: "Yuri Gagarin",
+    location: "Klushino, Russia",
+    title: "First in Space",
+    description: "Shopify Plus, Shopify",
+    status: "Open",
+    client: {
+      name: "Valentina",
+      imageUrl:
+        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_4_80x80.png?v=1617631864",
+    },
+    shopifyPlan: "Shopify Plus",
+  },
+  {
+    id: "345",
+    url: "#",
+    name: "Buzz Aldrin",
+    location: "Glen Ridge, USA",
+    title: "Moon Landing",
+    description: "Shopify Plus, Shopify",
+    status: "In Progress",
+    client: {
+      name: "Michael",
+      imageUrl:
+        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_5_80x80.png?v=1617631864",
+    },
+    shopifyPlan: "Shopify Advanced",
+  },
+  {
+    id: "346",
+    url: "#",
+    name: "John Glenn",
+    location: "Cambridge, USA",
+    title: "Orbital Flight",
+    description: "Shopify Plus, Shopify",
+    status: "Done",
+    client: {
+      name: "Scott",
+      imageUrl:
+        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_6_80x80.png?v=1617631864",
+    },
+    shopifyPlan: "Shopify",
+  },
+];
 
 export function AdminProjectsList() {
   const emptyFilterState: {
@@ -19,7 +112,7 @@ export function AdminProjectsList() {
       label: string;
       value: "";
     };
-    accountStatus: {
+    projectStatus: {
       label: string;
       value: string[];
     };
@@ -36,8 +129,8 @@ export function AdminProjectsList() {
       label: "Search",
       value: "",
     },
-    accountStatus: {
-      label: "Account status",
+    projectStatus: {
+      label: "Project status",
       value: [],
     },
     moneySpent: {
@@ -50,10 +143,11 @@ export function AdminProjectsList() {
     },
   };
 
+  const [projects, setProjects] = useState(items);
   const [queryValue, setQueryValue] = useState("");
   const [taggedWith, setTaggedWith] = useState("");
   const [moneySpent, setMoneySpent] = useState<[number, number]>([0, 0]);
-  const [accountStatus, setAccountStatus] = useState<string[]>(["enabled"]);
+  const [projectStatus, setProjectStatus] = useState<string[]>([]);
   const [savedFilterState, setSavedFilterState] = useState<
     Map<
       string,
@@ -64,11 +158,30 @@ export function AdminProjectsList() {
     >
   >(new Map(Object.entries(emptyFilterState)));
 
+  useEffect(() => {
+    //first filter by query
+    let filteredProjectsList = items.filter(
+      (project) =>
+        project.title.toLowerCase().includes(queryValue.toLowerCase()) ||
+        project.description.toLowerCase().includes(queryValue.toLowerCase()),
+    );
+
+    if (projectStatus.length === 0) {
+      setProjects(filteredProjectsList);
+    } else {
+      setProjects(
+        filteredProjectsList.filter((project) =>
+          projectStatus.includes(project.status),
+        ),
+      );
+    }
+  }, [projectStatus, queryValue]);
+
   const handleFilterChange =
     (key: string) => (value: string | string[] | number | [number, number]) => {
       if (key === "taggedWith") setTaggedWith(value as string);
       if (key === "moneySpent") setMoneySpent(value as [number, number]);
-      if (key === "accountStatus") setAccountStatus(value as string[]);
+      if (key === "projectStatus") setProjectStatus(value as string[]);
     };
 
   const handleFilterRemove = (key: string) => {
@@ -76,8 +189,8 @@ export function AdminProjectsList() {
       setTaggedWith(emptyFilterState.taggedWith.value);
     } else if (key === "moneySpent") {
       setMoneySpent(emptyFilterState.moneySpent.value);
-    } else if (key === "accountStatus") {
-      setAccountStatus(emptyFilterState.accountStatus.value);
+    } else if (key === "projectStatus") {
+      setProjectStatus(emptyFilterState.projectStatus.value);
     }
   };
 
@@ -95,21 +208,20 @@ export function AdminProjectsList() {
 
   const filters = [
     {
-      key: "accountStatus",
-      label: "Account status",
-      value: accountStatus,
+      key: "projectStatus",
+      label: "Project status",
+      value: projectStatus,
       filter: (
         <ChoiceList
-          title="Account status"
+          title="Project status"
           titleHidden
           choices={[
-            { label: "Enabled", value: "enabled" },
-            { label: "Not invited", value: "not invited" },
-            { label: "Invited", value: "invited" },
-            { label: "Declined", value: "declined" },
+            { label: "Open", value: "Open" },
+            { label: "In Progress", value: "In Progress" },
+            { label: "Done", value: "Done" },
           ]}
-          selected={accountStatus}
-          onChange={handleFilterChange("accountStatus")}
+          selected={projectStatus}
+          onChange={handleFilterChange("projectStatus")}
           allowMultiple
         />
       ),
@@ -188,11 +300,11 @@ export function AdminProjectsList() {
     <div style={{ height: "568px" }}>
       <Card roundedAbove="sm" padding="0">
         <ResourceList
-          resourceName={{ singular: "customer", plural: "customers" }}
+          resourceName={{ singular: "project", plural: "projects" }}
           filterControl={
             <Filters
               queryValue={queryValue}
-              queryPlaceholder="Searching in all"
+              queryPlaceholder="Searching in all projects"
               filters={filters}
               appliedFilters={appliedFilters}
               onQueryChange={handleFiltersQueryChange}
@@ -212,47 +324,8 @@ export function AdminProjectsList() {
             </Filters>
           }
           flushFilters
-          items={[
-            {
-              id: "341",
-              url: "#",
-              name: "Mae Jemison",
-              location: "Decatur, USA",
-            },
-            {
-              id: "256",
-              url: "#",
-              name: "Ellen Ochoa",
-              location: "Los Angeles, USA",
-            },
-          ]}
-          renderItem={(item) => {
-            const { id, url, name, location } = item;
-            const media = (
-              <Avatar
-                initials={name
-                  .split(" ")
-                  .map((nm) => nm.substring(0, 1))
-                  .join("")}
-                size="md"
-                name={name}
-              />
-            );
-
-            return (
-              <ResourceList.Item
-                id={id}
-                url={url}
-                media={media}
-                accessibilityLabel={`View details for ${name}`}
-              >
-                <Text as="h3" fontWeight="bold">
-                  {name}
-                </Text>
-                <div>{location}</div>
-              </ResourceList.Item>
-            );
-          }}
+          items={projects}
+          renderItem={renderItem}
         />
       </Card>
     </div>
@@ -283,7 +356,7 @@ export function AdminProjectsList() {
           })
           .join(", ");
       }
-      case "accountStatus": {
+      case "projectStatus": {
         const statuses = value as string[];
         if (statuses.length === 1) {
           return statuses[0];
@@ -324,15 +397,63 @@ export function AdminProjectsList() {
       ];
 
       return min === savedMoneySpent?.[0] && max === savedMoneySpent?.[1];
-    } else if (key === "accountStatus") {
-      const savedAccountStatus =
+    } else if (key === "projectStatus") {
+      const savedProjectStatus =
         (savedFilterState.get(key)?.value as string[]) || [];
       return (
         Array.isArray(value) &&
         (value as string[]).every((val) =>
-          savedAccountStatus?.includes(val as string),
+          savedProjectStatus?.includes(val as string),
         )
       );
     }
   }
+
+  function renderItem(item: {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+  }) {
+    const { id, description, title } = item;
+    const media = (
+      <Avatar
+        initials={title
+          .split(" ")
+          .map((nm) => nm.substring(0, 1))
+          .join("")}
+        size="md"
+        name={title}
+      />
+    );
+
+    return (
+      <ResourceList.Item
+        id={id}
+        url={id}
+        media={media}
+        accessibilityLabel={`View details for ${title}`}
+      >
+        <Text as="h3" fontWeight="bold">
+          {highlightText(title)}
+        </Text>
+        <div>{highlightText(description)}</div>
+      </ResourceList.Item>
+    );
+  }
+
+  function highlightText(text: string) {
+    if (!queryValue) return text;
+    const parts = text.split(new RegExp(`(${queryValue})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === queryValue.toLowerCase() ? (
+        <span key={index} className="highlight">
+          {part}
+        </span>
+      ) : (
+        part
+      ),
+    );
+  }
 }
+

@@ -52,9 +52,16 @@ model Client {
 }
 
 enum TaskStatus {
-  OPEN
-  IN_PROGRESS
-  DONE
+  OPEN        @map("Open")
+  IN_PROGRESS @map("In Progress")
+  DONE        @map("Done")
+}
+
+enum StorePlan {
+  BASIC            @map("Basic")
+  SHOPIFY          @map("Shopify")
+  SHOPIFY_ADVANCED @map("Shopify Advanced")
+  SHOPIFY_PLUS     @map("Shopify Plus")
 }
 
 model Project {
@@ -66,4 +73,5 @@ model Project {
   session     Session    @relation(fields: [sessionId], references: [id])
   clientId    String
   client      Client     @relation(fields: [clientId], references: [id])
+  shopifyPlan StorePlan  @default(BASIC)
 }

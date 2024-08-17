@@ -50,18 +50,27 @@ model Client {
 }
 
 model Project {
-  id             String     @id @default(cuid())
+  id             String      @id @default(cuid())
   title          String
   description    String?
-  status         TaskStatus @default(OPEN)
+  status         TaskStatus  @default(OPEN)
   sessionId      String
   clientId       String
-  xata_createdat DateTime   @default(now()) @db.Timestamptz(6)
-  xata_updatedat DateTime   @default(now()) @db.Timestamptz(6)
-  xata_id        String     @unique(map: "Project__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  xata_version   Int        @default(0)
-  client         Client     @relation(fields: [clientId], references: [id])
-  session        Session    @relation(fields: [sessionId], references: [id])
+  xata_createdat DateTime    @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime    @default(now()) @db.Timestamptz(6)
+  xata_id        String      @unique(map: "Project__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int         @default(0)
+  client         Client      @relation(fields: [clientId], references: [id])
+  session        Session     @relation(fields: [sessionId], references: [id])
+  shopifyPlan    ShopifyPlan @default(BASIC)
+  tags           String[]
+}
+
+enum ShopifyPlan {
+  BASIC    @map("Basic")
+  SHOPIFY  @map("Shopify")
+  ADVANCED @map("Advanced")
+  PLUS     @map("Plus")
 }
 
 enum TaskStatus {

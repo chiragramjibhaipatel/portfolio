@@ -28,50 +28,44 @@ model Session {
   xata_id        String    @unique(map: "Session__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
   xata_version   Int       @default(0)
-
-  Client  Client[]
-  Project Project[]
+  Client         Client[]
+  Project        Project[]
 }
 
 model Client {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   name           String
   company        String?
   email          String?
   about          String?
+  xata_createdat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_id        String    @unique(map: "Client__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_version   Int       @default(0)
   sessionId      String
-  session        Session  @relation(fields: [sessionId], references: [id])
   stores         String[]
   imageUrl       String?
-  xata_id        String   @unique(map: "Client__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  xata_version   Int      @default(0)
-  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
-  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
-
-  Project Project[]
-}
-
-enum TaskStatus {
-  OPEN        @map("Open")
-  IN_PROGRESS @map("In Progress")
-  DONE        @map("Done")
-}
-
-enum StorePlan {
-  BASIC            @map("Basic")
-  SHOPIFY          @map("Shopify")
-  SHOPIFY_ADVANCED @map("Shopify Advanced")
-  SHOPIFY_PLUS     @map("Shopify Plus")
+  session        Session   @relation(fields: [sessionId], references: [id])
+  Project        Project[]
 }
 
 model Project {
-  id          String     @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus @default(OPEN)
-  sessionId   String
-  session     Session    @relation(fields: [sessionId], references: [id])
-  clientId    String
-  client      Client     @relation(fields: [clientId], references: [id])
-  shopifyPlan StorePlan  @default(BASIC)
+  id             String     @id @default(cuid())
+  title          String
+  description    String?
+  status         TaskStatus @default(OPEN)
+  sessionId      String
+  clientId       String
+  xata_createdat DateTime   @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime   @default(now()) @db.Timestamptz(6)
+  xata_id        String     @unique(map: "Project__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int        @default(0)
+  client         Client     @relation(fields: [clientId], references: [id])
+  session        Session    @relation(fields: [sessionId], references: [id])
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
 }

@@ -1,110 +1,111 @@
-import type { FiltersProps } from "@shopify/polaris";
 import {
   Avatar,
   Box,
   Button,
   Card,
   ChoiceList,
+  EmptyState,
   Filters,
+  FiltersProps,
   RangeSlider,
   ResourceList,
   Text,
   TextField,
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
-
-let items = [
-  {
-    id: "341",
-    url: "#",
-    name: "Mae Jemison",
-    location: "Decatur, USA",
-    title: "Quantity Breaks",
-    description: "Shopify Plus, Shopify",
-    status: "Open",
-    client: {
-      name: "Eugen",
-      imageUrl:
-        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_1_80x80.png?v=1617631864",
-    },
-    shopifyPlan: "Shopify Plus",
-  },
-  {
-    id: "342",
-    url: "#",
-    name: "Neil Armstrong",
-    location: "Wapakoneta, USA",
-    title: "Space Exploration",
-    description: "Shopify Plus, Shopify",
-    status: "IN_PROGRESS",
-    client: {
-      name: "Buzz",
-      imageUrl:
-        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_2_80x80.png?v=1617631864",
-    },
-    shopifyPlan: "Shopify Advanced",
-  },
-  {
-    id: "343",
-    url: "#",
-    name: "Sally Ride",
-    location: "Encino, USA",
-    title: "STEM Education",
-    description: "Shopify Plus, Shopify",
-    status: "Done",
-    client: {
-      name: "Chris",
-      imageUrl:
-        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_3_80x80.png?v=1617631864",
-    },
-    shopifyPlan: "Shopify",
-  },
-  {
-    id: "344",
-    url: "#",
-    name: "Yuri Gagarin",
-    location: "Klushino, Russia",
-    title: "First in Space",
-    description: "Shopify Plus, Shopify",
-    status: "Open",
-    client: {
-      name: "Valentina",
-      imageUrl:
-        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_4_80x80.png?v=1617631864",
-    },
-    shopifyPlan: "Shopify Plus",
-  },
-  {
-    id: "345",
-    url: "#",
-    name: "Buzz Aldrin",
-    location: "Glen Ridge, USA",
-    title: "Moon Landing",
-    description: "Shopify Plus, Shopify",
-    status: "In Progress",
-    client: {
-      name: "Michael",
-      imageUrl:
-        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_5_80x80.png?v=1617631864",
-    },
-    shopifyPlan: "Shopify Advanced",
-  },
-  {
-    id: "346",
-    url: "#",
-    name: "John Glenn",
-    location: "Cambridge, USA",
-    title: "Orbital Flight",
-    description: "Shopify Plus, Shopify",
-    status: "Done",
-    client: {
-      name: "Scott",
-      imageUrl:
-        "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_6_80x80.png?v=1617631864",
-    },
-    shopifyPlan: "Shopify",
-  },
-];
+let items = []
+// let items = [
+//   {
+//     id: "341",
+//     url: "#",
+//     name: "Mae Jemison",
+//     location: "Decatur, USA",
+//     title: "Quantity Breaks",
+//     description: "Shopify Plus, Shopify",
+//     status: "Open",
+//     client: {
+//       name: "Eugen",
+//       imageUrl:
+//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_1_80x80.png?v=1617631864",
+//     },
+//     shopifyPlan: "Shopify Plus",
+//   },
+//   {
+//     id: "342",
+//     url: "#",
+//     name: "Neil Armstrong",
+//     location: "Wapakoneta, USA",
+//     title: "Space Exploration",
+//     description: "Shopify Plus, Shopify",
+//     status: "IN_PROGRESS",
+//     client: {
+//       name: "Buzz",
+//       imageUrl:
+//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_2_80x80.png?v=1617631864",
+//     },
+//     shopifyPlan: "Shopify Advanced",
+//   },
+//   {
+//     id: "343",
+//     url: "#",
+//     name: "Sally Ride",
+//     location: "Encino, USA",
+//     title: "STEM Education",
+//     description: "Shopify Plus, Shopify",
+//     status: "Done",
+//     client: {
+//       name: "Chris",
+//       imageUrl:
+//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_3_80x80.png?v=1617631864",
+//     },
+//     shopifyPlan: "Shopify",
+//   },
+//   {
+//     id: "344",
+//     url: "#",
+//     name: "Yuri Gagarin",
+//     location: "Klushino, Russia",
+//     title: "First in Space",
+//     description: "Shopify Plus, Shopify",
+//     status: "Open",
+//     client: {
+//       name: "Valentina",
+//       imageUrl:
+//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_4_80x80.png?v=1617631864",
+//     },
+//     shopifyPlan: "Shopify Plus",
+//   },
+//   {
+//     id: "345",
+//     url: "#",
+//     name: "Buzz Aldrin",
+//     location: "Glen Ridge, USA",
+//     title: "Moon Landing",
+//     description: "Shopify Plus, Shopify",
+//     status: "In Progress",
+//     client: {
+//       name: "Michael",
+//       imageUrl:
+//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_5_80x80.png?v=1617631864",
+//     },
+//     shopifyPlan: "Shopify Advanced",
+//   },
+//   {
+//     id: "346",
+//     url: "#",
+//     name: "John Glenn",
+//     location: "Cambridge, USA",
+//     title: "Orbital Flight",
+//     description: "Shopify Plus, Shopify",
+//     status: "Done",
+//     client: {
+//       name: "Scott",
+//       imageUrl:
+//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_6_80x80.png?v=1617631864",
+//     },
+//     shopifyPlan: "Shopify",
+//   },
+// ];
 
 export function AdminProjectsList() {
   const emptyFilterState: {
@@ -296,10 +297,23 @@ export function AdminProjectsList() {
     ({ unsavedChanges }) => !unsavedChanges,
   );
 
+  const emptyStateMarkup =
+    !items.length ? (
+      <EmptyState
+        heading="Add your first project"
+        action={{ content: "Add", url: "/app/projects/add" }}
+        image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
+      >
+        <p>
+          You can add projects to showcase your work. Add a project to get started. You can always edit or delete it later.
+        </p>
+      </EmptyState>
+    ) : undefined;
+
   return (
-    <div style={{ height: "568px" }}>
       <Card roundedAbove="sm" padding="0">
         <ResourceList
+          emptyState={emptyStateMarkup}
           resourceName={{ singular: "project", plural: "projects" }}
           filterControl={
             <Filters
@@ -328,7 +342,6 @@ export function AdminProjectsList() {
           renderItem={renderItem}
         />
       </Card>
-    </div>
   );
 
   function humanReadableValue(
@@ -456,4 +469,3 @@ export function AdminProjectsList() {
     );
   }
 }
-

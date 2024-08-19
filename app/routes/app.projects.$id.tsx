@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { ClientSelect } from "~/components/clientSelect";
 import { StoreList } from "~/components/storeList";
 import { ProjectTags } from "~/components/projectTags";
+import { ProjectStatus } from "~/components/projectStatus";
 
 //create project schema for validation
 const descriptionMinLength = 5;
@@ -27,6 +28,7 @@ const ProjectSchema = z.object({
   tags: z.array(z.string()).optional(),
   clientId: z.string(),
   storeUrl: z.string(),
+  status: z.enum(["OPEN", "IN_PROGRESS", "DONE"]),
 });
 
 // Define the type for form errors
@@ -64,6 +66,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       tags: true,
       clientId: true,
       storeUrl: true,
+      status: true,
     },
   });
 
@@ -83,7 +86,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     );
   }
 
-  const { title, description, tags, clientId, storeUrl } = result.data;
+  const { title, description, tags, clientId, storeUrl, status } = result.data;
   let project;
   if (id === "add") {
     project = await db.project.create({
@@ -94,6 +97,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         sessionId: session.id,
         clientId,
         storeUrl,
+        status
       },
     });
     return redirect(`/app/projects/${project.id}`);
@@ -110,6 +114,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       tags,
       clientId,
       storeUrl,
+      status
     },
   });
 
@@ -217,11 +222,23 @@ export default function AddProject() {
                   handleProjectChange={handleProjectChange}
                 />
               </FormLayout.Group>
-              <ProjectTags tags={projectData?.tags || []} handleProjectChange={handleProjectChange} />
+              <ProjectTags
+                tags={projectData?.tags || []}
+                handleProjectChange={handleProjectChange}
+              />
             </FormLayout>
           </Card>
         </Layout.Section>
-        <Layout.Section variant={"oneThird"}></Layout.Section>
+        <Layout.Section variant={"oneThird"}>
+          <Card>
+            <FormLayout>
+              <ProjectStatus
+                status={projectData?.status}
+                handleProjectChange={handleProjectChange}
+              />
+            </FormLayout>
+          </Card>
+        </Layout.Section>
       </Layout>
     </Page>
   );

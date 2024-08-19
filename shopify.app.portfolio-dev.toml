@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://calendar-electronics-encouraged-button.trycloudflare.com"
+application_url = "https://phoenix-rack-retail-dominican.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://calendar-electronics-encouraged-button.trycloudflare.com/auth/callback",
-  "https://calendar-electronics-encouraged-button.trycloudflare.com/auth/shopify/callback",
-  "https://calendar-electronics-encouraged-button.trycloudflare.com/api/auth/callback"
+  "https://phoenix-rack-retail-dominican.trycloudflare.com/auth/callback",
+  "https://phoenix-rack-retail-dominican.trycloudflare.com/auth/shopify/callback",
+  "https://phoenix-rack-retail-dominican.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

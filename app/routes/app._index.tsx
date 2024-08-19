@@ -1,15 +1,35 @@
 import { useEffect } from "react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import {useFetcher, useLoaderData} from "@remix-run/react";
 import { Page } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
+import { authenticate } from "~/shopify.server";
 import { AdminProjectsList } from "~/components/AdminProjectsList";
+import db from "../db.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-  return null;
+  const { session } = await authenticate.admin(request);
+  const projects = await db.project.findMany({
+    where: { sessionId: session.id },
+    orderBy: { xata_createdat: "desc" },
+      select: {
+        id: true,
+          title: true,
+          description: true,
+          status: true,
+          clientId: true,
+          storeUrl: true,
+          client: {
+            select: {
+                name: true,
+                company: true,
+            }
+          }
+          
+      }
+  });
+  return json({ projects });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -82,6 +102,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
+    let {projects} = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
 
   const shopify = useAppBridge();
@@ -103,8 +124,7 @@ export default function Index() {
   return (
     <Page>
       <TitleBar title="Your Personal Portfolio"></TitleBar>
-      <AdminProjectsList />
+      <AdminProjectsList allProjects={projects} />
     </Page>
   );
 }
-

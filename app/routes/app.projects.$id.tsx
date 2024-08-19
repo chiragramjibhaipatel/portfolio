@@ -15,6 +15,7 @@ import { ClientSelect } from "~/components/clientSelect";
 import { StoreList } from "~/components/storeList";
 import { ProjectTags } from "~/components/projectTags";
 import { ProjectStatus } from "~/components/projectStatus";
+import {TitleBar} from "@shopify/app-bridge-react";
 
 //create project schema for validation
 const descriptionMinLength = 5;
@@ -185,6 +186,7 @@ export default function AddProject() {
         onAction: handleSubmit,
       }}
     >
+      <TitleBar title="Your Personal Portfolio" />
       <Layout>
         <Layout.Section>
           <Card>

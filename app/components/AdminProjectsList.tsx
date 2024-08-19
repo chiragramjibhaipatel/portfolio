@@ -13,101 +13,8 @@ import {
   TextField,
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
-let items = []
-// let items = [
-//   {
-//     id: "341",
-//     url: "#",
-//     name: "Mae Jemison",
-//     location: "Decatur, USA",
-//     title: "Quantity Breaks",
-//     description: "Shopify Plus, Shopify",
-//     status: "Open",
-//     client: {
-//       name: "Eugen",
-//       imageUrl:
-//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_1_80x80.png?v=1617631864",
-//     },
-//     shopifyPlan: "Shopify Plus",
-//   },
-//   {
-//     id: "342",
-//     url: "#",
-//     name: "Neil Armstrong",
-//     location: "Wapakoneta, USA",
-//     title: "Space Exploration",
-//     description: "Shopify Plus, Shopify",
-//     status: "IN_PROGRESS",
-//     client: {
-//       name: "Buzz",
-//       imageUrl:
-//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_2_80x80.png?v=1617631864",
-//     },
-//     shopifyPlan: "Shopify Advanced",
-//   },
-//   {
-//     id: "343",
-//     url: "#",
-//     name: "Sally Ride",
-//     location: "Encino, USA",
-//     title: "STEM Education",
-//     description: "Shopify Plus, Shopify",
-//     status: "Done",
-//     client: {
-//       name: "Chris",
-//       imageUrl:
-//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_3_80x80.png?v=1617631864",
-//     },
-//     shopifyPlan: "Shopify",
-//   },
-//   {
-//     id: "344",
-//     url: "#",
-//     name: "Yuri Gagarin",
-//     location: "Klushino, Russia",
-//     title: "First in Space",
-//     description: "Shopify Plus, Shopify",
-//     status: "Open",
-//     client: {
-//       name: "Valentina",
-//       imageUrl:
-//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_4_80x80.png?v=1617631864",
-//     },
-//     shopifyPlan: "Shopify Plus",
-//   },
-//   {
-//     id: "345",
-//     url: "#",
-//     name: "Buzz Aldrin",
-//     location: "Glen Ridge, USA",
-//     title: "Moon Landing",
-//     description: "Shopify Plus, Shopify",
-//     status: "In Progress",
-//     client: {
-//       name: "Michael",
-//       imageUrl:
-//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_5_80x80.png?v=1617631864",
-//     },
-//     shopifyPlan: "Shopify Advanced",
-//   },
-//   {
-//     id: "346",
-//     url: "#",
-//     name: "John Glenn",
-//     location: "Cambridge, USA",
-//     title: "Orbital Flight",
-//     description: "Shopify Plus, Shopify",
-//     status: "Done",
-//     client: {
-//       name: "Scott",
-//       imageUrl:
-//         "https://cdn.shopify.com/s/files/1/0262/4071/2726/files/Avatar_6_80x80.png?v=1617631864",
-//     },
-//     shopifyPlan: "Shopify",
-//   },
-// ];
 
-export function AdminProjectsList() {
+export function AdminProjectsList({allProjects}: {allProjects: any}) {
   const emptyFilterState: {
     query: {
       label: string;
@@ -144,7 +51,7 @@ export function AdminProjectsList() {
     },
   };
 
-  const [projects, setProjects] = useState(items);
+  const [projects, setProjects] = useState(allProjects);
   const [queryValue, setQueryValue] = useState("");
   const [taggedWith, setTaggedWith] = useState("");
   const [moneySpent, setMoneySpent] = useState<[number, number]>([0, 0]);
@@ -161,7 +68,7 @@ export function AdminProjectsList() {
 
   useEffect(() => {
     //first filter by query
-    let filteredProjectsList = items.filter(
+    let filteredProjectsList = allProjects.filter(
       (project) =>
         project.title.toLowerCase().includes(queryValue.toLowerCase()) ||
         project.description.toLowerCase().includes(queryValue.toLowerCase()),
@@ -217,9 +124,9 @@ export function AdminProjectsList() {
           title="Project status"
           titleHidden
           choices={[
-            { label: "Open", value: "Open" },
-            { label: "In Progress", value: "In Progress" },
-            { label: "Done", value: "Done" },
+            { label: "Open", value: "OPEN" },
+            { label: "In Progress", value: "IN_PROGRESS" },
+            { label: "Done", value: "DONE" },
           ]}
           selected={projectStatus}
           onChange={handleFilterChange("projectStatus")}
@@ -298,7 +205,7 @@ export function AdminProjectsList() {
   );
 
   const emptyStateMarkup =
-    !items.length ? (
+    !allProjects.length ? (
       <EmptyState
         heading="Add your first project"
         action={{ content: "Add", url: "/app/projects/add" }}
@@ -443,7 +350,7 @@ export function AdminProjectsList() {
     return (
       <ResourceList.Item
         id={id}
-        url={id}
+        url={`/app/projects/${id}`}
         media={media}
         accessibilityLabel={`View details for ${title}`}
       >

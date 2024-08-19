@@ -14,17 +14,18 @@ export function StoreList({
   const [selectedStoreUrl, setSelectedStoreUrl] = useState<
     string | undefined
   >();
-  console.log("Selected store URL: ", selectedStoreUrl);
   const [inputValue, setInputValue] = useState(storeUrl);
   const deselectedStoreUrls = useMemo(
     () => [
       ...allStoreUrls
-        .filter((store) => store !== selectedStoreUrl)
         .map((store) => ({ value: store, label: store })),
     ],
     [allStoreUrls],
   );
   const [options, setOptions] = useState(deselectedStoreUrls);
+    useEffect (() => {
+        setOptions(deselectedStoreUrls);
+    }, [deselectedStoreUrls]);
 
   const escapeSpecialRegExCharacters = useCallback(
     (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
@@ -88,7 +89,9 @@ export function StoreList({
     } else {
       setSelectedStoreUrl(undefined);
       setInputValue("");
-      handleProjectChange("", "storeUrl");
+      if(storeUrl !== "") {
+        handleProjectChange("", "storeUrl");
+      }
     }
   }, [allStoreUrls]);
 

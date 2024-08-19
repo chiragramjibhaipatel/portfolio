@@ -14,7 +14,21 @@ import {
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
 
-export function AdminProjectsList({allProjects}: {allProjects: any}) {
+//create prop types for the project
+type Project = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  clientId: string;
+  storeUrl: string;
+  client: {
+    name: string;
+    company: string;
+  };
+};
+
+export function AdminProjectsList({allProjects} : {allProjects: Project[]}) {
   const emptyFilterState: {
     query: {
       label: string;

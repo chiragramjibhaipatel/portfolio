@@ -17,6 +17,15 @@ import { ProjectTags } from "~/components/projectTags";
 import { ProjectStatus } from "~/components/projectStatus";
 import {TitleBar} from "@shopify/app-bridge-react";
 
+//create prop types for the client
+type Client = {
+  id: string;
+  name: string;
+  stores: string[];
+};
+
+
+
 //create project schema for validation
 const descriptionMinLength = 5;
 const ProjectSchema = z.object({
@@ -134,7 +143,7 @@ export default function AddProject() {
   const [selectedClient, setSelectedClient] = useState<
     { id: string; name: string; stores: string[] } | undefined
   >(
-    loaderData.allClients.find((client) => client.id === projectData?.clientId),
+    loaderData.allClients.find((client: Client) => client.id === projectData?.clientId),
   );
 
   useEffect(() => {
@@ -161,7 +170,7 @@ export default function AddProject() {
     console.log("value: ", value, "id: ", id);
     if (id === "clientId") {
       const client = loaderData.allClients.find(
-        (client) => client.id === value,
+        (client : Client) => client.id === value,
       );
       setSelectedClient(client);
     }

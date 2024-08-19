@@ -8,6 +8,8 @@ import { authenticate } from "~/shopify.server";
 import { AdminProjectsList } from "~/components/AdminProjectsList";
 import db from "../db.server";
 
+
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   const projects = await db.project.findMany({

@@ -64,6 +64,7 @@ model Project {
   session        Session     @relation(fields: [sessionId], references: [id])
   shopifyPlan    ShopifyPlan @default(BASIC)
   tags           String[]
+  storeUrl       String?
 }
 
 enum ShopifyPlan {

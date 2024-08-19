@@ -9,27 +9,23 @@ import db from "~/db.server";
 import { z } from "zod";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useIsNew } from "~/hooks/useIsNew";
-import {
-  Card,
-  FormLayout,
-  InlineStack,
-  Layout,
-  Page,
-  TextField,
-} from "@shopify/polaris";
+import { Card, FormLayout, Layout, Page, TextField } from "@shopify/polaris";
 import { useEffect, useState } from "react";
 import { ClientSelect } from "~/components/clientSelect";
+import { StoreList } from "~/components/storeList";
 
 //create project schema for validation
+const descriptionMinLength = 5;
 const ProjectSchema = z.object({
   title: z
     .string()
     .min(3, { message: "Title must be at least 3 characters long" }),
-  description: z
-    .string()
-    .min(50, { message: "Description must be at least 50 characters long" }),
+  description: z.string().min(descriptionMinLength, {
+    message: `Description must be at least ${descriptionMinLength} characters long`,
+  }),
   tags: z.array(z.string()).optional(),
   clientId: z.string(),
+  storeUrl: z.string(),
 });
 
 // Define the type for form errors
@@ -66,6 +62,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       description: true,
       tags: true,
       clientId: true,
+      storeUrl: true,
     },
   });
 
@@ -85,7 +82,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     );
   }
 
-  const { title, description, tags, clientId } = result.data;
+  const { title, description, tags, clientId, storeUrl } = result.data;
   let project;
   if (id === "add") {
     project = await db.project.create({
@@ -95,12 +92,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         tags,
         sessionId: session.id,
         clientId,
+        storeUrl,
       },
     });
     return redirect(`/app/projects/${project.id}`);
   }
 
-  project = await db.project.update({
+  await db.project.update({
     where: {
       id,
       sessionId: session.id,
@@ -110,6 +108,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       description,
       tags,
       clientId,
+      storeUrl,
     },
   });
 
@@ -125,6 +124,9 @@ export default function AddProject() {
   const [formErrors, setFormErrors] = useState<FormErrors | undefined>(
     undefined,
   );
+  const [selectedClient, setSelectedClient] = useState<
+    { id: string; name: string; stores: string[] } | undefined
+  >(loaderData.allClients.find((client) => client.id === projectData?.clientId));
 
   useEffect(() => {
     setProjectData(loaderData.project);
@@ -148,6 +150,12 @@ export default function AddProject() {
 
   const handleProjectChange = (value: string, id: string) => {
     console.log("value: ", value, "id: ", id);
+    if (id === "clientId") {
+      const client = loaderData.allClients.find(
+        (client) => client.id === value,
+      );
+      setSelectedClient(client);
+    }
     // @ts-ignore
     setProjectData((prev) => {
       return {
@@ -192,17 +200,20 @@ export default function AddProject() {
                 autoComplete={"off"}
                 onChange={handleProjectChange}
               />
-              <InlineStack>
-                {loaderData.allClients && (
-                  <ClientSelect
-                    handleProjectChange={handleProjectChange}
-                    clientId={projectData?.clientId}
-                    allClients={loaderData.allClients}
-                    error={formErrors?.fieldErrors?.clientId?.[0]}
-                  />
-                )}
-                
-              </InlineStack>
+              <FormLayout.Group condensed>
+                <ClientSelect
+                  handleProjectChange={handleProjectChange}
+                  clientId={projectData?.clientId}
+                  allClients={loaderData.allClients}
+                  error={formErrors?.fieldErrors?.clientId?.[0] || ""}
+                />
+
+                <StoreList
+                  allStoreUrls={selectedClient?.stores || []}
+                  storeUrl={projectData?.storeUrl}
+                  handleProjectChange={handleProjectChange}
+                />
+              </FormLayout.Group>
               <TextField
                 label="Tags"
                 name="tags"
@@ -211,7 +222,7 @@ export default function AddProject() {
                 error={formErrors?.fieldErrors?.tags?.[0]}
                 autoComplete={"off"}
                 onChange={handleProjectChange}
-                  />
+              />
             </FormLayout>
           </Card>
         </Layout.Section>

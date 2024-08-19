@@ -13,6 +13,7 @@ import { Card, FormLayout, Layout, Page, TextField } from "@shopify/polaris";
 import { useEffect, useState } from "react";
 import { ClientSelect } from "~/components/clientSelect";
 import { StoreList } from "~/components/storeList";
+import { ProjectTags } from "~/components/projectTags";
 
 //create project schema for validation
 const descriptionMinLength = 5;
@@ -126,7 +127,9 @@ export default function AddProject() {
   );
   const [selectedClient, setSelectedClient] = useState<
     { id: string; name: string; stores: string[] } | undefined
-  >(loaderData.allClients.find((client) => client.id === projectData?.clientId));
+  >(
+    loaderData.allClients.find((client) => client.id === projectData?.clientId),
+  );
 
   useEffect(() => {
     setProjectData(loaderData.project);
@@ -148,7 +151,7 @@ export default function AddProject() {
     });
   }
 
-  const handleProjectChange = (value: string, id: string) => {
+  const handleProjectChange = (value: string | string[], id: string) => {
     console.log("value: ", value, "id: ", id);
     if (id === "clientId") {
       const client = loaderData.allClients.find(
@@ -214,15 +217,7 @@ export default function AddProject() {
                   handleProjectChange={handleProjectChange}
                 />
               </FormLayout.Group>
-              <TextField
-                label="Tags"
-                name="tags"
-                id="tags"
-                value={projectData?.tags?.join(",")}
-                error={formErrors?.fieldErrors?.tags?.[0]}
-                autoComplete={"off"}
-                onChange={handleProjectChange}
-              />
+              <ProjectTags tags={projectData?.tags || []} handleProjectChange={handleProjectChange} />
             </FormLayout>
           </Card>
         </Layout.Section>

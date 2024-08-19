@@ -12,13 +12,15 @@ import {
   Text,
   TextField,
 } from "@shopify/polaris";
-import {ActionFunctionArgs, json, LoaderFunctionArgs, redirect} from "@remix-run/node";
+import type {ActionFunctionArgs, LoaderFunctionArgs} from "@remix-run/node";
+import { json, redirect} from "@remix-run/node";
 import {z} from "zod";
 import {useFetcher, useLoaderData} from "@remix-run/react";
 import {authenticate} from "~/shopify.server";
 import db from "../db.server"
 import {useCallback, useEffect, useState} from "react";
 import {ClientImageUploader} from "~/components/clientImageUploader";
+import {useIsNew} from "~/hooks/useIsNew";
 
 const ClientSchema = z.object({
   name: z.string().min(3, {message: "Name must be at least 3 characters long"}),
@@ -121,23 +123,20 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
 
 export default function NewClient() {
   let data = useLoaderData<typeof loader>();
-  const [clientData, setClientData] = useState(data?.client);
-  const [isNew, setIsNew] = useState(true);
-  const [formErrors, setFormErrors] = useState<FormErrors | undefined>(undefined);
+  const [clientData, setClientData] = useState(data.client);
   const fetcher = useFetcher();
+  const isNew = useIsNew(fetcher);
+  const [formErrors, setFormErrors] = useState<FormErrors | undefined>(undefined);
   const [storeUrl, setStoreUrl] = useState<string | undefined>()
   const [storeUrlFocus, setStoreUrlFocus] = useState<boolean | undefined>()
 
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
+  
+  useEffect (() => {
+        setClientData(data.client);
+  }, [data.client]);
 
-  useEffect(() => {
-    if (window.location.pathname.endsWith("/add")) {
-      setIsNew(true);
-    } else {
-      setIsNew(false);
-    }
-  }, [fetcher]);
-
+  
   function handleSubmit(): void {
     const result = ClientSchema.safeParse(clientData);
     if (!result.success) {

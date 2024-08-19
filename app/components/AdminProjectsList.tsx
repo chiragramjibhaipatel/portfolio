@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   Card,
@@ -7,8 +8,11 @@ import {
   EmptyState,
   Filters,
   FiltersProps,
+  InlineGrid,
+  InlineStack,
   RangeSlider,
   ResourceList,
+  Tag,
   Text,
   TextField,
 } from "@shopify/polaris";
@@ -28,7 +32,7 @@ type Project = {
   };
 };
 
-export function AdminProjectsList({allProjects} : {allProjects: Project[]}) {
+export function AdminProjectsList({ allProjects }: { allProjects: Project[] }) {
   const emptyFilterState: {
     query: {
       label: string;
@@ -85,7 +89,12 @@ export function AdminProjectsList({allProjects} : {allProjects: Project[]}) {
     let filteredProjectsList = allProjects.filter(
       (project) =>
         project.title.toLowerCase().includes(queryValue.toLowerCase()) ||
-        project.description.toLowerCase().includes(queryValue.toLowerCase()),
+        project.description?.toLowerCase().includes(queryValue.toLowerCase()) ||
+        project.client.name?.toLowerCase().includes(queryValue.toLowerCase()) ||
+        project.client.company
+          ?.toLowerCase()
+          .includes(queryValue.toLowerCase()) ||
+        project.storeUrl?.toLowerCase().includes(queryValue.toLowerCase()),
     );
 
     if (projectStatus.length === 0) {
@@ -218,51 +227,51 @@ export function AdminProjectsList({allProjects} : {allProjects: Project[]}) {
     ({ unsavedChanges }) => !unsavedChanges,
   );
 
-  const emptyStateMarkup =
-    !allProjects.length ? (
-      <EmptyState
-        heading="Add your first project"
-        action={{ content: "Add", url: "/app/projects/add" }}
-        image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
-      >
-        <p>
-          You can add projects to showcase your work. Add a project to get started. You can always edit or delete it later.
-        </p>
-      </EmptyState>
-    ) : undefined;
+  const emptyStateMarkup = !allProjects.length ? (
+    <EmptyState
+      heading="Add your first project"
+      action={{ content: "Add", url: "/app/projects/add" }}
+      image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
+    >
+      <p>
+        You can add projects to showcase your work. Add a project to get
+        started. You can always edit or delete it later.
+      </p>
+    </EmptyState>
+  ) : undefined;
 
   return (
-      <Card roundedAbove="sm" padding="0">
-        <ResourceList
-          emptyState={emptyStateMarkup}
-          resourceName={{ singular: "project", plural: "projects" }}
-          filterControl={
-            <Filters
-              queryValue={queryValue}
-              queryPlaceholder="Searching in all projects"
-              filters={filters}
-              appliedFilters={appliedFilters}
-              onQueryChange={handleFiltersQueryChange}
-              onQueryClear={handleQueryValueRemove}
-              onClearAll={handleFiltersClearAll}
-            >
-              <Box paddingInlineStart="200">
-                <Button
-                  disabled={disableAction}
-                  onClick={handleSaveFilters}
-                  size="micro"
-                  variant="tertiary"
-                >
-                  Save
-                </Button>
-              </Box>
-            </Filters>
-          }
-          flushFilters
-          items={projects}
-          renderItem={renderItem}
-        />
-      </Card>
+    <Card roundedAbove="sm" padding="0">
+      <ResourceList
+        emptyState={emptyStateMarkup}
+        resourceName={{ singular: "project", plural: "projects" }}
+        filterControl={
+          <Filters
+            queryValue={queryValue}
+            queryPlaceholder="Searching in all projects"
+            filters={filters}
+            appliedFilters={appliedFilters}
+            onQueryChange={handleFiltersQueryChange}
+            onQueryClear={handleQueryValueRemove}
+            onClearAll={handleFiltersClearAll}
+          >
+            <Box paddingInlineStart="200">
+              <Button
+                disabled={disableAction}
+                onClick={handleSaveFilters}
+                size="micro"
+                variant="tertiary"
+              >
+                Save
+              </Button>
+            </Box>
+          </Filters>
+        }
+        flushFilters
+        items={projects}
+        renderItem={renderItem}
+      />
+    </Card>
   );
 
   function humanReadableValue(
@@ -343,13 +352,15 @@ export function AdminProjectsList({allProjects} : {allProjects: Project[]}) {
     }
   }
 
-  function renderItem(item: {
-    id: string;
-    title: string;
-    description: string;
-    status: string;
-  }) {
-    const { id, description, title } = item;
+  function renderItem(item: Project) {
+    const {
+      id,
+      description,
+      title,
+      status,
+      storeUrl,
+      client: { name, company },
+    } = item;
     const media = (
       <Avatar
         initials={title
@@ -360,23 +371,51 @@ export function AdminProjectsList({allProjects} : {allProjects: Project[]}) {
         name={title}
       />
     );
+    let badgeTone;
+    if (status === "OPEN") badgeTone = "info";
+    else if (status === "IN_PROGRESS") badgeTone = "warning";
+    else if (status === "DONE") badgeTone = "success";
 
     return (
       <ResourceList.Item
         id={id}
-        url={`/app/projects/${id}`}
+        url={""}
         media={media}
         accessibilityLabel={`View details for ${title}`}
+        persistActions
+        shortcutActions={[
+          {
+            content: "Edit project",
+            url: `/app/projects/${id}`,
+          },
+        ]}
       >
-        <Text as="h3" fontWeight="bold">
-          {highlightText(title)}
-        </Text>
-        <div>{highlightText(description)}</div>
+        <InlineGrid columns={3} gap={"200"}>
+          <Box>
+            <Text as="h3" fontWeight="bold">
+              {highlightText(title)}
+            </Text>
+            <div>{highlightText(description)}</div>
+          </Box>
+          <Box>
+            <Text as="h4">
+              {highlightText(name)} -{" "}
+              <div style={{ fontStyle: "italic", display: "inline" }}>
+                {highlightText(company)}
+              </div>
+            </Text>
+            <InlineStack gap={"100"} wrap={false}>
+              <Tag> {highlightText(storeUrl)}</Tag>
+              <Badge tone={badgeTone} progress={status === "IN_PROGRESS" ? "partiallyComplete":undefined}>{status}</Badge>
+            </InlineStack>
+          </Box>
+        </InlineGrid>
       </ResourceList.Item>
     );
   }
 
   function highlightText(text: string) {
+    if (!text) return text;
     if (!queryValue) return text;
     const parts = text.split(new RegExp(`(${queryValue})`, "gi"));
     return parts.map((part, index) =>

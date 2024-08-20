@@ -12,24 +12,30 @@ import {
   Text,
   TextField,
 } from "@shopify/polaris";
-import type {ActionFunctionArgs, LoaderFunctionArgs} from "@remix-run/node";
-import { json, redirect} from "@remix-run/node";
-import {z} from "zod";
-import {useFetcher, useLoaderData} from "@remix-run/react";
-import {authenticate} from "~/shopify.server";
-import db from "../db.server"
-import {useCallback, useEffect, useState} from "react";
-import {ClientImageUploader} from "~/components/clientImageUploader";
-import {useIsNew} from "~/hooks/useIsNew";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { z } from "zod";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { authenticate } from "~/shopify.server";
+import db from "../db.server";
+import { useCallback, useEffect, useState } from "react";
+import { ClientImageUploader } from "~/components/clientImageUploader";
+import { useIsNew } from "~/hooks/useIsNew";
 
 const ClientSchema = z.object({
-  name: z.string().min(3, {message: "Name must be at least 3 characters long"}),
-  company: z.string().min(3, {message: "Company must be at least 3 characters long"}).nullable().optional(),
+  name: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters long" }),
+  company: z
+    .string()
+    .min(3, { message: "Company must be at least 3 characters long" })
+    .nullable()
+    .optional(),
   about: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
   stores: z.array(z.string()).optional(),
-  imageUrl: z.string().nullable().optional()
-})
+  imageUrl: z.string().nullable().optional(),
+});
 
 // Define the type for form errors
 type FormErrors = {
@@ -37,18 +43,18 @@ type FormErrors = {
   fieldErrors?: Record<string, string[]>;
 };
 
-export const loader = async ({request, params}: LoaderFunctionArgs) => {
-  const {session} = await authenticate.admin(request);
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const { session } = await authenticate.admin(request);
 
-  const {id} = params;
+  const { id } = params;
   if (id === "add") {
-    return json({client: null});
+    return json({ client: null });
   }
   console.log("Existing Client id: ", id);
   const client = await db.client.findUnique({
     where: {
       id: id,
-      sessionId: session.id
+      sessionId: session.id,
     },
     select: {
       name: true,
@@ -56,27 +62,30 @@ export const loader = async ({request, params}: LoaderFunctionArgs) => {
       about: true,
       email: true,
       stores: true,
-      imageUrl: true
-    }
-  })
+      imageUrl: true,
+    },
+  });
   if (!client) {
-    throw new Response("Client not found", {status: 404});
+    throw new Response("Client not found", { status: 404 });
   }
   console.log("Client: ", client);
-  return json({client});
+  return json({ client });
 };
 
-export const action = async ({request, params}: ActionFunctionArgs) => {
-  const {session} = await authenticate.admin(request);
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const { session } = await authenticate.admin(request);
   console.log("params action", params);
   const formData = await request.json();
   const result = ClientSchema.safeParse(formData);
 
   if (!result.success) {
-    return json({status: "error", errors: result.error.flatten()}, {status: 400});
+    return json(
+      { status: "error", errors: result.error.flatten() },
+      { status: 400 },
+    );
   }
 
-  const {name, company, about, email, stores, imageUrl} = result.data;
+  const { name, company, about, email, stores, imageUrl } = result.data;
   let client;
   if (params.id === "add") {
     console.log("Creating new client");
@@ -88,8 +97,8 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         email,
         sessionId: session.id,
         stores,
-        imageUrl
-      }
+        imageUrl,
+      },
     });
     return redirect(`/app/clients/${client.id}`);
   } else {
@@ -97,7 +106,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
     client = await db.client.update({
       where: {
         id: params.id,
-        sessionId: session.id
+        sessionId: session.id,
       },
       data: {
         name,
@@ -105,7 +114,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         about,
         email,
         stores,
-        imageUrl
+        imageUrl,
       },
       select: {
         name: true,
@@ -113,30 +122,26 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         about: true,
         email: true,
         stores: true,
-        imageUrl: true
-      }
+        imageUrl: true,
+      },
     });
-    return json({status: "success", client}, {status: 200});
+    return json({ status: "success", client }, { status: 200 });
   }
-}
-
+};
 
 export default function NewClient() {
   let data = useLoaderData<typeof loader>();
   const [clientData, setClientData] = useState(data.client);
   const fetcher = useFetcher();
   const isNew = useIsNew(fetcher);
-  const [formErrors, setFormErrors] = useState<FormErrors | undefined>(undefined);
-  const [storeUrl, setStoreUrl] = useState<string | undefined>()
-  const [storeUrlFocus, setStoreUrlFocus] = useState<boolean | undefined>()
+  const [formErrors, setFormErrors] = useState<FormErrors | undefined>(
+    undefined,
+  );
+  const [storeUrl, setStoreUrl] = useState<string | undefined>();
+  const [storeUrlFocus, setStoreUrlFocus] = useState<boolean | undefined>();
 
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
-  
-  useEffect (() => {
-        setClientData(data.client);
-  }, [data.client]);
 
-  
   function handleSubmit(): void {
     const result = ClientSchema.safeParse(clientData);
     if (!result.success) {
@@ -146,10 +151,7 @@ export default function NewClient() {
     }
     setFormErrors(undefined);
 
-    fetcher.submit(
-      clientData,
-      {method: "post", encType: "application/json"},
-    );
+    fetcher.submit(clientData, { method: "post", encType: "application/json" });
   }
 
   const handleClientChange = (value: string, id: string) => {
@@ -161,42 +163,41 @@ export default function NewClient() {
         [id]: value,
       };
     });
-  }
+  };
 
   function handleAddStoreUrl() {
     // @ts-ignore
     setClientData((prev) => {
       if (prev === null) {
         return {
-          stores: [storeUrl]
-        }
+          stores: [storeUrl],
+        };
       } else if (!prev.stores) {
         return {
           ...prev,
-          stores: [storeUrl]
-        }
+          stores: [storeUrl],
+        };
       }
       return {
         ...prev,
-        stores: [...new Set([...prev?.stores, storeUrl])]
-      }
+        stores: [...new Set([...prev?.stores, storeUrl])],
+      };
     });
     setStoreUrl("");
-    setStoreUrlFocus(true)
-
+    setStoreUrlFocus(true);
   }
 
   function handleStoreUrlChange(value: string) {
     setStoreUrl(value);
   }
 
-  function handleSetImageUrl(imageUrl: string) {
-    // @ts-ignore
+  function handleSetImageUrl(imageUrl: string | null) {
+    console.log("Setting Image Url: ", imageUrl);
     setClientData((prev) => {
       return {
         ...prev,
-        imageUrl
-      }
+        imageUrl,
+      };
     });
   }
 
@@ -206,13 +207,13 @@ export default function NewClient() {
       setClientData((prev) => {
         if (prev === null) {
           return {
-            stores: []
-          }
+            stores: [],
+          };
         }
         return {
           ...prev,
-          stores: prev.stores.filter(s => s !== store)
-        }
+          stores: prev.stores.filter((s) => s !== store),
+        };
       });
     },
     [],
@@ -221,7 +222,7 @@ export default function NewClient() {
   return (
     <Page
       title={isNew ? "Add New Client" : "Edit Client"}
-      backAction={{content: "All Clients", url: "/app/clients"}}
+      backAction={{ content: "All Clients", url: "/app/clients" }}
       primaryAction={{
         content: "Save",
         disabled: JSON.stringify(data.client) === JSON.stringify(clientData),
@@ -274,20 +275,33 @@ export default function NewClient() {
               </Card>
               <Card>
                 <FormLayout>
-                  <TextField label="Store Url"
-                             focused={storeUrlFocus}
-                             autoComplete="off"
-                             value={storeUrl}
-                             onBlur={() => setStoreUrlFocus(false)}
-                             type={"url"}
-                             onChange={handleStoreUrlChange}
-                             connectedRight={<Button onClick={handleAddStoreUrl}
-                                                     disabled={storeUrl?.length === 0}>Add</Button>}
-                             prefix={"https://"}>
-                  </TextField>
+                  <TextField
+                    label="Store Url"
+                    focused={storeUrlFocus}
+                    autoComplete="off"
+                    value={storeUrl}
+                    onBlur={() => setStoreUrlFocus(false)}
+                    type={"url"}
+                    onChange={handleStoreUrlChange}
+                    connectedRight={
+                      <Button
+                        onClick={handleAddStoreUrl}
+                        disabled={storeUrl?.length === 0}
+                      >
+                        Add
+                      </Button>
+                    }
+                    prefix={"https://"}
+                  ></TextField>
                   <InlineStack gap={"200"}>
-                    {clientData?.stores?.map(store => (
-                      <Tag onRemove={handleRemoveStoreUrl(store)} key={store} url={`https://${store}`}>{store}</Tag>
+                    {clientData?.stores?.map((store) => (
+                      <Tag
+                        onRemove={handleRemoveStoreUrl(store)}
+                        key={store}
+                        url={`https://${store}`}
+                      >
+                        {store}
+                      </Tag>
                     ))}
                   </InlineStack>
                 </FormLayout>
@@ -296,7 +310,10 @@ export default function NewClient() {
           </Layout.Section>
           <Layout.Section variant="oneThird">
             <FormLayout>
-              <ClientImageUploader imageUrl={clientData?.imageUrl} handleSetImageUrl={handleSetImageUrl}/>
+              <ClientImageUploader
+                imageUrl={clientData?.imageUrl}
+                handleSetImageUrl={handleSetImageUrl}
+              />
               {!isNew && (
                 <Card>
                   <Text as="h2" variant="bodyMd">
@@ -317,4 +334,3 @@ export default function NewClient() {
     </Page>
   );
 }
-

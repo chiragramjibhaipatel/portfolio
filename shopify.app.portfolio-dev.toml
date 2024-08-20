@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://would-advertiser-forgot-glow.trycloudflare.com"
+application_url = "https://announcements-quad-survey-university.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://would-advertiser-forgot-glow.trycloudflare.com/auth/callback",
-  "https://would-advertiser-forgot-glow.trycloudflare.com/auth/shopify/callback",
-  "https://would-advertiser-forgot-glow.trycloudflare.com/api/auth/callback"
+  "https://announcements-quad-survey-university.trycloudflare.com/auth/callback",
+  "https://announcements-quad-survey-university.trycloudflare.com/auth/shopify/callback",
+  "https://announcements-quad-survey-university.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

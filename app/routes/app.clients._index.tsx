@@ -65,9 +65,6 @@ export const action = async ({ request }: LoaderFunctionArgs) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner
       if (error.code === "P2003") {
-        console.log(
-          "There is a unique constraint violation, a new user cannot be created with this email",
-        );
         throw new Error(pleaseDeleteTheProjectsFirst);
       }
     }

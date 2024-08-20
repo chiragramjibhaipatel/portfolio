@@ -18,22 +18,22 @@ import {
     BadgeStatusValue
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
+import { Project } from '@prisma/client';
 
-//create prop types for the project
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  clientId: string;
-  storeUrl: string;
+
+type ProjectSummary = Pick<Project, 'id' | 'title' | 'description' | 'status' | 'storeUrl'> & {
   client: {
-    name: string;
-    company: string;
+    name: string | null;
+    company: string | null;
   };
 };
 
-export function AdminProjectsList({ allProjects }: { allProjects: Project[] }) {
+// Use the new type as the prop type
+type AdminProjectsListProps = {
+  allProjects: ProjectSummary[];
+};
+
+export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   const emptyFilterState: {
     query: {
       label: string;
@@ -353,7 +353,7 @@ export function AdminProjectsList({ allProjects }: { allProjects: Project[] }) {
     }
   }
 
-  function renderItem(item: Project) {
+  function renderItem(item: ProjectSummary) {
     const {
       id,
       description,
@@ -415,7 +415,7 @@ export function AdminProjectsList({ allProjects }: { allProjects: Project[] }) {
     );
   }
 
-  function highlightText(text: string) {
+  function highlightText(text: string | null) {
     if (!text) return text;
     if (!queryValue) return text;
     const parts = text.split(new RegExp(`(${queryValue})`, "gi"));

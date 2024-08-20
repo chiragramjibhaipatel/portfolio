@@ -1,25 +1,26 @@
-import type { FiltersProps } from "@shopify/polaris";
 import {
   Avatar,
   Badge,
   BadgeStatusValue,
+  BlockStack,
   Box,
   Button,
+  CalloutCard,
   Card,
   ChoiceList,
   EmptyState,
   Filters,
+  FiltersProps,
   InlineGrid,
   InlineStack,
-  RangeSlider,
   ResourceList,
-  Tag,
   Text,
   TextField,
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
 import type { Project } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
+import { PlusIcon } from "@shopify/polaris-icons";
 
 type ProjectSummary = Pick<
   Project,
@@ -46,10 +47,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
       label: string;
       value: string[];
     };
-    moneySpent: {
-      label: string;
-      value: [number, number];
-    };
     taggedWith: {
       label: string;
       value: "";
@@ -63,10 +60,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
       label: "Project status",
       value: [],
     },
-    moneySpent: {
-      label: "Money spent",
-      value: [0, 0],
-    },
     taggedWith: {
       label: "Tagged with",
       value: "",
@@ -79,7 +72,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   }, [allProjects]);
   const [queryValue, setQueryValue] = useState("");
   const [taggedWith, setTaggedWith] = useState("");
-  const [moneySpent, setMoneySpent] = useState<[number, number]>([0, 0]);
   const [projectStatus, setProjectStatus] = useState<string[]>([]);
   const [savedFilterState, setSavedFilterState] = useState<
     Map<
@@ -151,15 +143,12 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   const handleFilterChange =
     (key: string) => (value: string | string[] | number | [number, number]) => {
       if (key === "taggedWith") setTaggedWith(value as string);
-      if (key === "moneySpent") setMoneySpent(value as [number, number]);
       if (key === "projectStatus") setProjectStatus(value as string[]);
     };
 
   const handleFilterRemove = (key: string) => {
     if (key === "taggedWith") {
       setTaggedWith(emptyFilterState.taggedWith.value);
-    } else if (key === "moneySpent") {
-      setMoneySpent(emptyFilterState.moneySpent.value);
     } else if (key === "projectStatus") {
       setProjectStatus(emptyFilterState.projectStatus.value);
     }
@@ -208,30 +197,13 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
           label="Tagged with"
           value={taggedWith}
           onChange={handleFilterChange("taggedWith")}
+          placeholder="to be implemented"
           autoComplete="off"
           labelHidden
         />
       ),
       shortcut: true,
       pinned: true,
-    },
-    {
-      key: "moneySpent",
-      label: "Money spent",
-      value: moneySpent,
-      filter: (
-        <RangeSlider
-          label="Money spent is between"
-          labelHidden
-          value={moneySpent}
-          prefix="$"
-          output
-          min={0}
-          max={2000}
-          step={1}
-          onChange={handleFilterChange("moneySpent")}
-        />
-      ),
     },
   ];
 
@@ -270,7 +242,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   const emptyStateMarkup = !allProjects.length ? (
     <EmptyState
       heading="Add your first project"
-      action={{ content: "Add", url: "/app/projects/add" }}
+      action={{ content: "Add", url: "/app/projects/add", icon: PlusIcon }}
       image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png"
     >
       <p>
@@ -281,41 +253,55 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   ) : undefined;
 
   return (
-    <Card roundedAbove="sm" padding="0">
-      <ResourceList
-        loading={formIsLoading}
-        emptyState={emptyStateMarkup}
-        resourceName={{ singular: "project", plural: "projects" }}
-        selectedItems={selectedIProjects}
-        onSelectionChange={setSelectedIProjects}
-        promotedBulkActions={promotedBulkActions}
-        filterControl={
-          <Filters
-            queryValue={queryValue}
-            queryPlaceholder="Searching in all projects"
-            filters={filters}
-            appliedFilters={appliedFilters}
-            onQueryChange={handleFiltersQueryChange}
-            onQueryClear={handleQueryValueRemove}
-            onClearAll={handleFiltersClearAll}
-          >
-            <Box paddingInlineStart="200">
-              <Button
-                disabled={disableAction}
-                onClick={handleSaveFilters}
-                size="micro"
-                variant="tertiary"
-              >
-                Save
-              </Button>
-            </Box>
-          </Filters>
-        }
-        flushFilters
-        items={projects}
-        renderItem={renderItem}
+    <BlockStack gap={"2000"}>
+      <CalloutCard
+        title={"This is a place where you can manage all your projects"}
+        children="feel free to add more projects, edit or delete them. You can also search for a specific project using the search bar in the table below. Projects added here will be displayed on your portfolio page. You can choose if you want to hide a project from the portfolio page"
+        primaryAction={{
+          content: "Add Project",
+          url: "/app/projects/add",
+          icon: PlusIcon,
+        }}
+        secondaryAction={{ content: "Add Clients", url: "/app/clients/add" }}
+        illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
       />
-    </Card>
+
+      <Card roundedAbove="sm" padding={"0"}>
+        <ResourceList
+          loading={formIsLoading}
+          emptyState={emptyStateMarkup}
+          resourceName={{ singular: "project", plural: "projects" }}
+          selectedItems={selectedIProjects}
+          onSelectionChange={setSelectedIProjects}
+          promotedBulkActions={promotedBulkActions}
+          filterControl={
+            <Filters
+              queryValue={queryValue}
+              queryPlaceholder="Searching in all projects"
+              filters={filters}
+              appliedFilters={appliedFilters}
+              onQueryChange={handleFiltersQueryChange}
+              onQueryClear={handleQueryValueRemove}
+              onClearAll={handleFiltersClearAll}
+            >
+              <Box paddingInlineStart="200">
+                <Button
+                  disabled={disableAction}
+                  onClick={handleSaveFilters}
+                  size="micro"
+                  variant="tertiary"
+                >
+                  Save
+                </Button>
+              </Box>
+            </Filters>
+          }
+          flushFilters
+          items={projects}
+          renderItem={renderItem}
+        />
+      </Card>
+    </BlockStack>
   );
 
   function humanReadableValue(
@@ -418,7 +404,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
     let badgeTone;
     if (status === "OPEN") badgeTone = BadgeStatusValue.Info;
     else if (status === "IN_PROGRESS") badgeTone = BadgeStatusValue.Warning;
-    else if (status === "DONE") badgeTone = BadgeStatusValue.Success;
+    else if (status === "DONE") badgeTone = BadgeStatusValue.New;
 
     return (
       <ResourceList.Item
@@ -448,14 +434,25 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
               </div>
             </Text>
             <InlineStack gap={"100"} wrap={false}>
-              <Tag> {highlightText(storeUrl)}</Tag>
+              {storeUrl && (
+                <Badge
+                  tone={BadgeStatusValue.New}
+                  children={highlightText(storeUrl)}
+                />
+              )}
               <Badge
                 tone={badgeTone}
                 progress={
                   status === "IN_PROGRESS" ? "partiallyComplete" : undefined
                 }
               >
-                {status}
+                {status === "IN_PROGRESS"
+                  ? "In Progress"
+                  : status === "OPEN"
+                    ? "Open"
+                    : status === "DONE"
+                      ? "Done"
+                      : ""}
               </Badge>
             </InlineStack>
           </Box>
@@ -465,7 +462,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   }
 
   function highlightText(text: string | null) {
-    if (!text) return text;
+    if (!text) return "";
     if (!queryValue) return text;
     const parts = text.split(new RegExp(`(${queryValue})`, "gi"));
     return parts.map((part, index) =>

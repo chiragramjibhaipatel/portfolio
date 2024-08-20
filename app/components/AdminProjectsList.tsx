@@ -418,7 +418,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
     let badgeTone;
     if (status === "OPEN") badgeTone = BadgeStatusValue.Info;
     else if (status === "IN_PROGRESS") badgeTone = BadgeStatusValue.Warning;
-    else if (status === "DONE") badgeTone = BadgeStatusValue.Success;
+    else if (status === "DONE") badgeTone = BadgeStatusValue.New;
 
     return (
       <ResourceList.Item
@@ -448,14 +448,23 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
               </div>
             </Text>
             <InlineStack gap={"100"} wrap={false}>
-              <Tag> {highlightText(storeUrl)}</Tag>
+              <Badge
+                tone={BadgeStatusValue.New}
+                children={highlightText(storeUrl)}
+              ></Badge>
               <Badge
                 tone={badgeTone}
                 progress={
                   status === "IN_PROGRESS" ? "partiallyComplete" : undefined
                 }
               >
-                {status}
+                {status === "IN_PROGRESS"
+                  ? "In Progress"
+                  : status === "OPEN"
+                    ? "Open"
+                    : status === "DONE"
+                      ? "Done"
+                      : ""}
               </Badge>
             </InlineStack>
           </Box>
@@ -465,7 +474,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   }
 
   function highlightText(text: string | null) {
-    if (!text) return text;
+    if (!text) return "";
     if (!queryValue) return text;
     const parts = text.split(new RegExp(`(${queryValue})`, "gi"));
     return parts.map((part, index) =>

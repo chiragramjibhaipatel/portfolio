@@ -15,7 +15,7 @@ import { ClientSelect } from "~/components/clientSelect";
 import { StoreList } from "~/components/storeList";
 import { ProjectTags } from "~/components/projectTags";
 import { ProjectStatus } from "~/components/projectStatus";
-import {TitleBar} from "@shopify/app-bridge-react";
+import { TitleBar } from "@shopify/app-bridge-react";
 
 //create prop types for the client
 type Client = {
@@ -23,8 +23,6 @@ type Client = {
   name: string;
   stores: string[];
 };
-
-
 
 //create project schema for validation
 const descriptionMinLength = 5;
@@ -107,7 +105,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         sessionId: session.id,
         clientId,
         storeUrl,
-        status
+        status,
       },
     });
     return redirect(`/app/projects/${project.id}`);
@@ -124,7 +122,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       tags,
       clientId,
       storeUrl,
-      status
+      status,
     },
   });
 
@@ -143,7 +141,9 @@ export default function AddProject() {
   const [selectedClient, setSelectedClient] = useState<
     { id: string; name: string; stores: string[] } | undefined
   >(
-    loaderData.allClients.find((client: Client) => client.id === projectData?.clientId),
+    loaderData.allClients.find(
+      (client: Client) => client.id === projectData?.clientId,
+    ),
   );
 
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function AddProject() {
     console.log("value: ", value, "id: ", id);
     if (id === "clientId") {
       const client = loaderData.allClients.find(
-        (client : Client) => client.id === value,
+        (client: Client) => client.id === value,
       );
       setSelectedClient(client);
     }
@@ -195,7 +195,6 @@ export default function AddProject() {
         onAction: handleSubmit,
       }}
     >
-      <TitleBar title="Your Personal Portfolio" />
       <Layout>
         <Layout.Section>
           <Card>

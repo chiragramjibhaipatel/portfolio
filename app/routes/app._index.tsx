@@ -51,7 +51,6 @@ export default function Index() {
   let { projects } = useLoaderData<typeof loader>();
   return (
     <Page>
-      <TitleBar title="Your Personal Portfolio"></TitleBar>
       <AdminProjectsList allProjects={projects} />
     </Page>
   );

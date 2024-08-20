@@ -194,6 +194,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
           label="Tagged with"
           value={taggedWith}
           onChange={handleFilterChange("taggedWith")}
+          placeholder="to be implemented"
           autoComplete="off"
           labelHidden
         />

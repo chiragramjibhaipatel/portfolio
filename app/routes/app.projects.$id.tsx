@@ -9,13 +9,20 @@ import db from "~/db.server";
 import { z } from "zod";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useIsNew } from "~/hooks/useIsNew";
-import { Card, FormLayout, Layout, Page, TextField } from "@shopify/polaris";
+import {
+  BlockStack,
+  Card,
+  FormLayout,
+  Layout,
+  Page,
+  TextField,
+} from "@shopify/polaris";
 import { useEffect, useState } from "react";
 import { ClientSelect } from "~/components/clientSelect";
 import { StoreList } from "~/components/storeList";
 import { ProjectTags } from "~/components/projectTags";
 import { ProjectStatus } from "~/components/projectStatus";
-import { TitleBar } from "@shopify/app-bridge-react";
+import { ProjectVisibility } from "~/components/projectVisibility";
 
 //create prop types for the client
 type Client = {
@@ -37,6 +44,10 @@ const ProjectSchema = z.object({
   clientId: z.string(),
   storeUrl: z.string(),
   status: z.enum(["OPEN", "IN_PROGRESS", "DONE"]),
+  testimonial: z.string().optional(),
+  solution: z.string().optional(),
+  hurdles: z.string().optional(),
+  visible: z.boolean().optional(),
 });
 
 // Define the type for form errors
@@ -75,6 +86,10 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       clientId: true,
       storeUrl: true,
       status: true,
+      testimonial: true,
+      solution: true,
+      hurdles: true,
+      visible: true,
     },
   });
 
@@ -94,7 +109,18 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     );
   }
 
-  const { title, description, tags, clientId, storeUrl, status } = result.data;
+  const {
+    title,
+    description,
+    tags,
+    clientId,
+    storeUrl,
+    status,
+    testimonial,
+    solution,
+    hurdles,
+    visible,
+  } = result.data;
   let project;
   if (id === "add") {
     project = await db.project.create({
@@ -106,6 +132,10 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         clientId,
         storeUrl,
         status,
+        testimonial,
+        solution,
+        hurdles,
+        visible,
       },
     });
     return redirect(`/app/projects/${project.id}`);
@@ -123,6 +153,10 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       clientId,
       storeUrl,
       status,
+      testimonial,
+      solution,
+      hurdles,
+      visible,
     },
   });
 
@@ -197,53 +231,95 @@ export default function AddProject() {
     >
       <Layout>
         <Layout.Section>
-          <Card>
-            <FormLayout>
+          <BlockStack gap={"200"}>
+            <Card>
+              <FormLayout>
+                <TextField
+                  label="Title"
+                  name="title"
+                  id="title"
+                  value={projectData?.title}
+                  error={formErrors?.fieldErrors?.title?.[0]}
+                  autoComplete={"off"}
+                  onChange={handleProjectChange}
+                />
+                <TextField
+                  label="Description"
+                  name="description"
+                  id="description"
+                  value={projectData?.description}
+                  error={formErrors?.fieldErrors?.description?.[0]}
+                  multiline={4}
+                  autoComplete={"off"}
+                  onChange={handleProjectChange}
+                />
+                <FormLayout.Group condensed>
+                  <ClientSelect
+                    handleProjectChange={handleProjectChange}
+                    clientId={projectData?.clientId}
+                    allClients={loaderData.allClients}
+                    error={formErrors?.fieldErrors?.clientId?.[0] || ""}
+                  />
+
+                  <StoreList
+                    allStoreUrls={selectedClient?.stores || []}
+                    storeUrl={projectData?.storeUrl}
+                    handleProjectChange={handleProjectChange}
+                  />
+                </FormLayout.Group>
+                <ProjectTags
+                  tags={projectData?.tags || []}
+                  handleProjectChange={handleProjectChange}
+                />
+              </FormLayout>
+            </Card>
+            <Card>
+              <FormLayout>
+                <TextField
+                  label="Solution/Implementation"
+                  name="solution"
+                  id="solution"
+                  value={projectData?.solution || ""}
+                  error={formErrors?.fieldErrors?.solution?.[0]}
+                  multiline={4}
+                  autoComplete={"off"}
+                  onChange={handleProjectChange}
+                />
+                <TextField
+                  label="Hurdles/Challenges"
+                  name="hurdles"
+                  id="hurdles"
+                  value={projectData?.hurdles || ""}
+                  error={formErrors?.fieldErrors?.hurdles?.[0]}
+                  multiline={4}
+                  autoComplete={"off"}
+                  onChange={handleProjectChange}
+                />
+              </FormLayout>
+            </Card>
+            <Card>
               <TextField
-                label="Title"
-                name="title"
-                id="title"
-                value={projectData?.title}
-                error={formErrors?.fieldErrors?.title?.[0]}
-                autoComplete={"off"}
-                onChange={handleProjectChange}
-              />
-              <TextField
-                label="Description"
-                name="description"
-                id="description"
-                value={projectData?.description}
-                error={formErrors?.fieldErrors?.description?.[0]}
+                label="Testimonial by Client"
+                name="testimonial"
+                id="testimonial"
+                value={projectData?.testimonial || ""}
+                error={formErrors?.fieldErrors?.testimonial?.[0]}
                 multiline={4}
                 autoComplete={"off"}
                 onChange={handleProjectChange}
               />
-              <FormLayout.Group condensed>
-                <ClientSelect
-                  handleProjectChange={handleProjectChange}
-                  clientId={projectData?.clientId}
-                  allClients={loaderData.allClients}
-                  error={formErrors?.fieldErrors?.clientId?.[0] || ""}
-                />
-
-                <StoreList
-                  allStoreUrls={selectedClient?.stores || []}
-                  storeUrl={projectData?.storeUrl}
-                  handleProjectChange={handleProjectChange}
-                />
-              </FormLayout.Group>
-              <ProjectTags
-                tags={projectData?.tags || []}
-                handleProjectChange={handleProjectChange}
-              />
-            </FormLayout>
-          </Card>
+            </Card>
+          </BlockStack>
         </Layout.Section>
         <Layout.Section variant={"oneThird"}>
           <Card>
             <FormLayout>
               <ProjectStatus
                 status={projectData?.status}
+                handleProjectChange={handleProjectChange}
+              />
+              <ProjectVisibility
+                visible={projectData?.visible}
                 handleProjectChange={handleProjectChange}
               />
             </FormLayout>

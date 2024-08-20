@@ -65,6 +65,10 @@ model Project {
   shopifyPlan    ShopifyPlan?
   tags           String[]
   storeUrl       String?
+  testimonial    String?
+  solution       String?
+  hurdles        String?
+  visible        Boolean?
 }
 
 enum ShopifyPlan {

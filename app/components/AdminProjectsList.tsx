@@ -11,9 +11,7 @@ import {
   Filters,
   InlineGrid,
   InlineStack,
-  RangeSlider,
   ResourceList,
-  Tag,
   Text,
   TextField,
 } from "@shopify/polaris";
@@ -79,7 +77,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   }, [allProjects]);
   const [queryValue, setQueryValue] = useState("");
   const [taggedWith, setTaggedWith] = useState("");
-  const [moneySpent, setMoneySpent] = useState<[number, number]>([0, 0]);
   const [projectStatus, setProjectStatus] = useState<string[]>([]);
   const [savedFilterState, setSavedFilterState] = useState<
     Map<
@@ -151,15 +148,12 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   const handleFilterChange =
     (key: string) => (value: string | string[] | number | [number, number]) => {
       if (key === "taggedWith") setTaggedWith(value as string);
-      if (key === "moneySpent") setMoneySpent(value as [number, number]);
       if (key === "projectStatus") setProjectStatus(value as string[]);
     };
 
   const handleFilterRemove = (key: string) => {
     if (key === "taggedWith") {
       setTaggedWith(emptyFilterState.taggedWith.value);
-    } else if (key === "moneySpent") {
-      setMoneySpent(emptyFilterState.moneySpent.value);
     } else if (key === "projectStatus") {
       setProjectStatus(emptyFilterState.projectStatus.value);
     }
@@ -214,24 +208,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
       ),
       shortcut: true,
       pinned: true,
-    },
-    {
-      key: "moneySpent",
-      label: "Money spent",
-      value: moneySpent,
-      filter: (
-        <RangeSlider
-          label="Money spent is between"
-          labelHidden
-          value={moneySpent}
-          prefix="$"
-          output
-          min={0}
-          max={2000}
-          step={1}
-          onChange={handleFilterChange("moneySpent")}
-        />
-      ),
     },
   ];
 

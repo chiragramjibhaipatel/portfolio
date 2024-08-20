@@ -1,13 +1,14 @@
+import type { FiltersProps } from "@shopify/polaris";
 import {
   Avatar,
   Badge,
+  BadgeStatusValue,
   Box,
   Button,
   Card,
   ChoiceList,
   EmptyState,
   Filters,
-  FiltersProps,
   InlineGrid,
   InlineStack,
   RangeSlider,
@@ -15,13 +16,15 @@ import {
   Tag,
   Text,
   TextField,
-    BadgeStatusValue
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
-import { Project } from '@prisma/client';
+import type { Project } from "@prisma/client";
+import { useFetcher } from "@remix-run/react";
 
-
-type ProjectSummary = Pick<Project, 'id' | 'title' | 'description' | 'status' | 'storeUrl'> & {
+type ProjectSummary = Pick<
+  Project,
+  "id" | "title" | "description" | "status" | "storeUrl"
+> & {
   client: {
     name: string | null;
     company: string | null;
@@ -71,6 +74,9 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   };
 
   const [projects, setProjects] = useState(allProjects);
+  useEffect(() => {
+    setProjects(allProjects);
+  }, [allProjects]);
   const [queryValue, setQueryValue] = useState("");
   const [taggedWith, setTaggedWith] = useState("");
   const [moneySpent, setMoneySpent] = useState<[number, number]>([0, 0]);
@@ -84,6 +90,39 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
       }
     >
   >(new Map(Object.entries(emptyFilterState)));
+
+  const [selectedIProjects, setSelectedIProjects] = useState<string[] | "All">(
+    [],
+  );
+  let fetcherDeleteProjects = useFetcher({ key: "deleteProjects" });
+
+  const formIsLoading = ["loading", "submitting"].includes(
+    fetcherDeleteProjects.state,
+  );
+  console.log("Selected Items: ", selectedIProjects);
+
+  useEffect(() => {
+    if (fetcherDeleteProjects.data?.status === "success") {
+      setSelectedIProjects([]);
+    }
+  }, [fetcherDeleteProjects.data]);
+
+  const handleDeleteProjects = () => {
+    if (selectedIProjects && selectedIProjects?.length === 0) return;
+    console.log(selectedIProjects);
+    fetcherDeleteProjects.submit(
+      { selectedIProjects },
+      { method: "POST", encType: "application/json" },
+    );
+  };
+
+  const promotedBulkActions = [
+    {
+      content: "Delete projects",
+      onAction: handleDeleteProjects,
+      variant: "danger",
+    },
+  ];
 
   useEffect(() => {
     //first filter by query
@@ -244,8 +283,12 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   return (
     <Card roundedAbove="sm" padding="0">
       <ResourceList
+        loading={formIsLoading}
         emptyState={emptyStateMarkup}
         resourceName={{ singular: "project", plural: "projects" }}
+        selectedItems={selectedIProjects}
+        onSelectionChange={setSelectedIProjects}
+        promotedBulkActions={promotedBulkActions}
         filterControl={
           <Filters
             queryValue={queryValue}
@@ -380,10 +423,9 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
     return (
       <ResourceList.Item
         id={id}
-        url={""}
+        url={`/app/projects/${id}`}
         media={media}
         accessibilityLabel={`View details for ${title}`}
-        persistActions
         shortcutActions={[
           {
             content: "Edit project",
@@ -407,7 +449,14 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
             </Text>
             <InlineStack gap={"100"} wrap={false}>
               <Tag> {highlightText(storeUrl)}</Tag>
-              <Badge tone={badgeTone} progress={status === "IN_PROGRESS" ? "partiallyComplete":undefined}>{status}</Badge>
+              <Badge
+                tone={badgeTone}
+                progress={
+                  status === "IN_PROGRESS" ? "partiallyComplete" : undefined
+                }
+              >
+                {status}
+              </Badge>
             </InlineStack>
           </Box>
         </InlineGrid>

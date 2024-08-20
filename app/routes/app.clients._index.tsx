@@ -1,5 +1,6 @@
 import {
-  BlockStack, Box,
+  BlockStack,
+  Box,
   Button,
   CalloutCard,
   Card,
@@ -96,6 +97,12 @@ export default function ClientsPage() {
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
   console.log("Selected Items: ", selectedItems);
 
+  useEffect(() => {
+    if (fetcher.data?.status === "success") {
+      setSelectedItems([]);
+    }
+  }, [fetcher.data]);
+
   let handleDeleteClient = async () => {
     fetcher.submit(
       { selectedItems: selectedItems },
@@ -105,12 +112,6 @@ export default function ClientsPage() {
       },
     );
   };
-
-  useEffect(() => {
-    if (fetcher.data?.status === "success") {
-      setSelectedItems([]);
-    }
-  }, [fetcher.data]);
 
   const bulkActions = [
     {
@@ -220,12 +221,15 @@ export function ErrorBoundary() {
     errorTitle = "Something went wrong while deleting the client";
   }
   return (
-    <BlockStack inlineAlign={"center"} align={"center"} >
+    <BlockStack inlineAlign={"center"} align={"center"}>
       <Box paddingBlockStart={"2000"}>
         <CalloutCard
           title={errorTitle}
           illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-          primaryAction={{ content: "Go back to clients list", url: "/app/clients" }}
+          primaryAction={{
+            content: "Go back to clients list",
+            url: "/app/clients",
+          }}
           secondaryAction={{ content: "Go to Projects", url: "/app" }}
         >
           <p>{routeError.message}</p>

@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://val-international-stone-vendors.trycloudflare.com"
+application_url = "https://would-advertiser-forgot-glow.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://val-international-stone-vendors.trycloudflare.com/auth/callback",
-  "https://val-international-stone-vendors.trycloudflare.com/auth/shopify/callback",
-  "https://val-international-stone-vendors.trycloudflare.com/api/auth/callback"
+  "https://would-advertiser-forgot-glow.trycloudflare.com/auth/callback",
+  "https://would-advertiser-forgot-glow.trycloudflare.com/auth/shopify/callback",
+  "https://would-advertiser-forgot-glow.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

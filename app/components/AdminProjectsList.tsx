@@ -15,6 +15,7 @@ import {
   Tag,
   Text,
   TextField,
+    BadgeStatusValue
 } from "@shopify/polaris";
 import { useCallback, useEffect, useState } from "react";
 
@@ -372,9 +373,9 @@ export function AdminProjectsList({ allProjects }: { allProjects: Project[] }) {
       />
     );
     let badgeTone;
-    if (status === "OPEN") badgeTone = "info";
-    else if (status === "IN_PROGRESS") badgeTone = "warning";
-    else if (status === "DONE") badgeTone = "success";
+    if (status === "OPEN") badgeTone = BadgeStatusValue.Info;
+    else if (status === "IN_PROGRESS") badgeTone = BadgeStatusValue.Warning;
+    else if (status === "DONE") badgeTone = BadgeStatusValue.Success;
 
     return (
       <ResourceList.Item

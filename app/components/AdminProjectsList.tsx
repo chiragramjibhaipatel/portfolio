@@ -44,10 +44,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
       label: string;
       value: string[];
     };
-    moneySpent: {
-      label: string;
-      value: [number, number];
-    };
     taggedWith: {
       label: string;
       value: "";
@@ -60,10 +56,6 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
     projectStatus: {
       label: "Project status",
       value: [],
-    },
-    moneySpent: {
-      label: "Money spent",
-      value: [0, 0],
     },
     taggedWith: {
       label: "Tagged with",

@@ -176,7 +176,7 @@ function renderItem(item: any) {
           {company}
         </span>
         <div>
-          <Tag>tasks: {projectCount}</Tag>
+          <Tag>Projects: {projectCount}</Tag>
         </div>
       </Text>
     </ResourceItem>

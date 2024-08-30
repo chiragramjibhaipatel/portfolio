@@ -53,9 +53,6 @@ export default function Welcome() {
                   <Bleed marginBlockEnd="400" marginInline="400">
                     <Box background="bg-surface-secondary" padding="400">
                       <BlockStack gap="200">
-                        <Text as="h3" variant="headingSm" fontWeight="medium">
-                          Tools Used
-                        </Text>
                         <InlineStack gap={"100"}>
                           {projects.tools.map((item, index) => (
                             <Badge

@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://object-statistics-rhode-hood.trycloudflare.com"
+application_url = "https://inquiries-keyword-pillow-graphic.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://object-statistics-rhode-hood.trycloudflare.com/auth/callback",
-  "https://object-statistics-rhode-hood.trycloudflare.com/auth/shopify/callback",
-  "https://object-statistics-rhode-hood.trycloudflare.com/api/auth/callback"
+  "https://inquiries-keyword-pillow-graphic.trycloudflare.com/auth/callback",
+  "https://inquiries-keyword-pillow-graphic.trycloudflare.com/auth/shopify/callback",
+  "https://inquiries-keyword-pillow-graphic.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -18,7 +18,7 @@ import { z } from "zod";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { authenticate } from "~/shopify.server";
 import db from "../db.server";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { ClientImageUploader } from "~/components/clientImageUploader";
 import { useIsNew } from "~/hooks/useIsNew";
 
@@ -63,6 +63,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       email: true,
       stores: true,
       imageUrl: true,
+      Project: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
     },
   });
   if (!client) {
@@ -314,15 +320,20 @@ export default function NewClient() {
                 imageUrl={clientData?.imageUrl}
                 handleSetImageUrl={handleSetImageUrl}
               />
-              {!isNew && (
+              {clientData?.Project?.length && (
                 <Card>
                   <Text as="h2" variant="bodyMd">
                     Tasks:
                   </Text>
                   <Box paddingBlockStart={"200"}>
                     <List>
-                      <List.Item>task 1</List.Item>
-                      <List.Item>task 2</List.Item>
+                      {clientData?.Project?.map((project) => {
+                        return (
+                          <List.Item key={project.id}>
+                            {project.title}
+                          </List.Item>
+                        );
+                      })}
                     </List>
                   </Box>
                 </Card>

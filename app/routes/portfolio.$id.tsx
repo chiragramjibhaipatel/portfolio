@@ -27,7 +27,9 @@ export default function Welcome() {
         <Card>
           <BlockStack gap={"200"}>
             <Text as="h2" variant="headingLg">
-              {projects.title}
+              <Box paddingInlineStart={"200"} paddingBlockEnd={"200"}>
+                {projects.title}
+              </Box>
             </Text>
             <Layout>
               <Layout.Section>
@@ -69,18 +71,34 @@ export default function Welcome() {
                 </Card>
               </Layout.Section>
               <Layout.Section variant="oneThird">
-                <Card>
-                  <BlockStack gap={"200"}>
-                    <Text as="h2" variant="headingMd">
-                      Hurdles/Challenges:
-                    </Text>
-                    <Box paddingBlockEnd="200">
-                      <Markdown remarkPlugins={[remarkGfm]}>
-                        {markdown}
-                      </Markdown>
-                    </Box>
-                  </BlockStack>
-                </Card>
+                <BlockStack gap={"200"}>
+                  <Card>
+                    <BlockStack gap={"200"}>
+                      <Text as="h2" variant="headingMd">
+                        Hurdles/Challenges:
+                      </Text>
+                      <Box paddingBlockEnd="200">
+                        <Markdown remarkPlugins={[remarkGfm]}>
+                          {markdown}
+                        </Markdown>
+                      </Box>
+                    </BlockStack>
+                  </Card>
+                  <Card>
+                    <BlockStack gap={"200"}>
+                      <Text as="h2" variant="headingMd">
+                        Client Review:
+                      </Text>
+                      <Box paddingBlockEnd="200">
+                        <Text as={"h4"}>
+                          <div style={{ fontStyle: "italic" }}>
+                            " review by the client for this project "
+                          </div>
+                        </Text>
+                      </Box>
+                    </BlockStack>
+                  </Card>
+                </BlockStack>
               </Layout.Section>
             </Layout>
           </BlockStack>

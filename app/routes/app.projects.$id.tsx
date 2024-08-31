@@ -200,7 +200,10 @@ export default function AddProject() {
     });
   }
 
-  const handleProjectChange = (value: string | string[], id: string) => {
+  const handleProjectChange = (
+    value: boolean | string | string[],
+    id: string,
+  ) => {
     console.log("value: ", value, "id: ", id);
     if (id === "clientId") {
       const client = loaderData.allClients.find(

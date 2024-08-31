@@ -1,6 +1,6 @@
 import {
-  Testimonials,
   links as TestimonialLinks,
+  Testimonials,
 } from "~/components/Testimonials";
 import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import en from "@shopify/polaris/locales/en.json";
@@ -25,6 +25,7 @@ import "./styles.css";
 import { LogoXIcon } from "@shopify/polaris-icons";
 import db from "~/db.server";
 import { useLoaderData } from "@remix-run/react";
+import { NewsletterForm } from "~/components/newsletterForm";
 
 export const links = () => [...TestimonialLinks];
 
@@ -146,6 +147,9 @@ export default function Portfolio() {
           </Layout.Section>
           <Layout.Section>
             <Testimonials testimonials={testimonials} />
+          </Layout.Section>
+          <Layout.Section>
+            <NewsletterForm />
           </Layout.Section>
         </Layout>
       </Page>

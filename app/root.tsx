@@ -46,7 +46,6 @@ export default function App() {
   return (
     <html>
       <head>
-        <script src="http://localhost:8097"></script>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="preconnect" href="https://cdn.shopify.com/" />

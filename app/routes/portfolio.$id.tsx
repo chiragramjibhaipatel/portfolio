@@ -7,27 +7,59 @@ import {
   Box,
   BlockStack,
   Layout,
-  List,
   Bleed,
   Badge,
 } from "@shopify/polaris";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { uniqueTones } from "~/data/custom_data";
+import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import db from "~/db.server";
+import { useLoaderData } from "@remix-run/react";
 
-const markdown = "# Hi, *Pluto*!";
+export const loader: LoaderFunction = async ({
+  params,
+}: LoaderFunctionArgs) => {
+  const { id } = params;
+  console.log("Portfolio ID: ", id);
+  const project = await db.project.findUnique({
+    where: {
+      id: id,
+    },
+    select: {
+      title: true,
+      description: true,
+      solution: true,
+      hurdles: true,
+      tags: true,
+      testimonial: true,
+      client: {
+        select: {
+          name: true,
+          company: true,
+          about: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
 
-import { data, uniqueTones } from "../data/custom_data";
-const projects: Data = data[0];
+  return json({ project });
+};
 
 export default function Welcome() {
+  let { project } = useLoaderData<typeof loader>();
   return (
     <Page>
       <BlockStack gap="1200">
-        <PortfolioHeader projects={projects} />
+        <PortfolioHeader project={project} />
         <Card>
           <BlockStack gap={"200"}>
             <Text as="h2" variant="headingLg">
-              {projects.title}
+              <Box paddingInlineStart={"200"} paddingBlockEnd={"200"}>
+                {project.title}
+              </Box>
             </Text>
             <Layout>
               <Layout.Section>
@@ -38,7 +70,7 @@ export default function Welcome() {
                     </Text>
                     <Box paddingBlockEnd="200">
                       <Markdown remarkPlugins={[remarkGfm]}>
-                        {projects.description}
+                        {project.description}
                       </Markdown>
                     </Box>
                     <Text as="h2" variant="headingSm">
@@ -46,18 +78,15 @@ export default function Welcome() {
                     </Text>
                     <Box paddingBlockEnd="200">
                       <Markdown remarkPlugins={[remarkGfm]}>
-                        {markdown}
+                        {project.solution}
                       </Markdown>
                     </Box>
                   </BlockStack>
                   <Bleed marginBlockEnd="400" marginInline="400">
                     <Box background="bg-surface-secondary" padding="400">
                       <BlockStack gap="200">
-                        <Text as="h3" variant="headingSm" fontWeight="medium">
-                          Tools Used
-                        </Text>
                         <InlineStack gap={"100"}>
-                          {projects.tools.map((item, index) => (
+                          {project.tags.map((item: string, index: number) => (
                             <Badge
                               key={item}
                               tone={uniqueTones[index % uniqueTones.length]}
@@ -72,18 +101,34 @@ export default function Welcome() {
                 </Card>
               </Layout.Section>
               <Layout.Section variant="oneThird">
-                <Card>
-                  <BlockStack gap={"200"}>
-                    <Text as="h2" variant="headingMd">
-                      Hurdles/Challenges:
-                    </Text>
-                    <Box paddingBlockEnd="200">
-                      <Markdown remarkPlugins={[remarkGfm]}>
-                        {markdown}
-                      </Markdown>
-                    </Box>
-                  </BlockStack>
-                </Card>
+                <BlockStack gap={"200"}>
+                  <Card>
+                    <BlockStack gap={"200"}>
+                      <Text as="h2" variant="headingMd">
+                        Hurdles/Challenges:
+                      </Text>
+                      <Box paddingBlockEnd="200">
+                        <Markdown remarkPlugins={[remarkGfm]}>
+                          {project.hurdles}
+                        </Markdown>
+                      </Box>
+                    </BlockStack>
+                  </Card>
+                  <Card>
+                    <BlockStack gap={"200"}>
+                      <Text as="h2" variant="headingMd">
+                        Client Review:
+                      </Text>
+                      <Box paddingBlockEnd="200">
+                        <Text as={"h4"}>
+                          <div style={{ fontStyle: "italic" }}>
+                            {project.testimonial}
+                          </div>
+                        </Text>
+                      </Box>
+                    </BlockStack>
+                  </Card>
+                </BlockStack>
               </Layout.Section>
             </Layout>
           </BlockStack>
@@ -93,39 +138,50 @@ export default function Welcome() {
   );
 }
 
-function PortfolioHeader({ projects }: { projects: Data }) {
+function PortfolioHeader({
+  project,
+}: {
+  project: {
+    id: string;
+    title: string;
+    solution: string;
+    client: { name: string; company: string; imageUrl: string; about: string };
+  };
+}) {
   return (
     <Card>
-      <InlineStack gap={"200"}>
-        <Thumbnail
-          source="https://daensk.de/cdn/shop/files/daensk_512x168_07c26e4e-1a5d-4566-969e-cd4f1b9d598a.png"
-          alt="Black choker necklace"
-          transparent={true}
-          size="large"
-        />
-        <BlockStack gap={"150"}>
-          <InlineStack blockAlign="end" gap={"100"}>
-            <Text variant="headingLg" as={"span"}>
-              {projects.client?.name}
-            </Text>
+      <InlineStack>
+        <Box>
+          <Thumbnail
+            source={project.client?.imageUrl}
+            alt="Black choker necklace"
+            transparent={true}
+            size="large"
+          />
+        </Box>
+        <Box width={"70%"} paddingInlineStart={"400"}>
+          <BlockStack gap={"150"}>
+            <InlineStack blockAlign="end" gap={"100"}>
+              <Text variant="headingLg" as={"h2"}>
+                {project.client?.name}
+              </Text>
+              <div
+                style={{
+                  fontStyle: "italic",
+                }}
+              >
+                - {project.client?.company}
+              </div>
+            </InlineStack>
             <div
               style={{
                 fontStyle: "italic",
               }}
             >
-              - {projects.client?.company}
+              {project.client?.about}
             </div>
-          </InlineStack>
-          <InlineStack gap={"100"}>
-            <div
-              style={{
-                fontStyle: "italic",
-              }}
-            >
-              - {projects.client?.about}
-            </div>
-          </InlineStack>
-        </BlockStack>
+          </BlockStack>
+        </Box>
       </InlineStack>
     </Card>
   );

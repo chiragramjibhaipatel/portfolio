@@ -11,8 +11,6 @@ primary_region = 'ams'
 [env]
   PORT = '3000'
   SCOPES = 'write_products'
-  BEEHIIVE_API_KEY = 'IQuxjmYagHnZgOV6P1duwMOSih5JxrzcjkswS2AdKo4peUTVvhRp1dWhYU9hDS1R'
-  BEEHIIVE_PUBLICATION_ID='pub_1f924ed5-e01c-4e4a-80ca-abca3595c0f2'
 
 
 [http_service]

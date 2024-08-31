@@ -323,14 +323,19 @@ export default function NewClient() {
               {clientData?.Project?.length && (
                 <Card>
                   <Text as="h2" variant="bodyMd">
-                    Tasks:
+                    Projects:
                   </Text>
                   <Box paddingBlockStart={"200"}>
                     <List>
                       {clientData?.Project?.map((project) => {
                         return (
                           <List.Item key={project.id}>
-                            {project.title}
+                            <Button
+                              url={`/app/projects/${project.id}`}
+                              variant={"plain"}
+                            >
+                              {project.title}
+                            </Button>
                           </List.Item>
                         );
                       })}

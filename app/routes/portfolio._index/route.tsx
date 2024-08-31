@@ -1,6 +1,6 @@
 import {
-  Testimonials,
   links as TestimonialLinks,
+  Testimonials,
 } from "~/components/Testimonials";
 import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import en from "@shopify/polaris/locales/en.json";
@@ -25,6 +25,7 @@ import "./styles.css";
 import { LogoXIcon } from "@shopify/polaris-icons";
 import db from "~/db.server";
 import { useLoaderData } from "@remix-run/react";
+import { NewsletterForm } from "~/components/newsletterForm";
 
 export const links = () => [...TestimonialLinks];
 
@@ -84,19 +85,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
   return json({ projects, testimonials });
 };
-
-function NewsletterForm() {
-  return (
-    <iframe
-      src="https://embeds.beehiiv.com/5496afd5-ea9c-4bb9-8f52-953393d44712"
-      data-test-id="beehiiv-embed"
-      width="100%"
-      height="320"
-      frameborder="0"
-      scrolling="no"
-    ></iframe>
-  );
-}
 
 export default function Portfolio() {
   let loaderData = useLoaderData<typeof loader>();

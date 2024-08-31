@@ -1,11 +1,9 @@
 import {
   BlockStack,
   Box,
-  Button,
   CalloutCard,
   Card,
   EmptyState,
-  InlineStack,
   Layout,
   Link,
   Page,
@@ -36,6 +34,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       name: true,
       company: true,
       about: true,
+      _count: {
+        select: {
+          Project: true,
+        },
+      },
     },
     take: 5,
   });
@@ -89,6 +92,7 @@ function EmptyStateMarkup() {
 
 export default function ClientsPage() {
   const { clients } = useLoaderData<typeof loader>();
+  console.log("Clients: ", clients);
   const [selectedItems, setSelectedItems] = useState<string[] | "All">([]);
   let fetcher = useFetcher<typeof action>();
   const formIsLoading = ["loading", "submitting"].includes(fetcher.state);
@@ -121,15 +125,6 @@ export default function ClientsPage() {
 
   const emptyStateMarkup = !clients.length ? <EmptyStateMarkup /> : undefined;
 
-  const fetcherHandleAddClients = useFetcher({ key: "addClients" });
-
-  function handleAddClients() {
-    fetcherHandleAddClients.submit(
-      {},
-      { action: "/api/clients/add", method: "POST" },
-    );
-  }
-
   return (
     <Page>
       <Layout>
@@ -153,33 +148,18 @@ export default function ClientsPage() {
             ></ResourceList>
           </Card>
         </Layout.AnnotatedSection>
-        <Layout.AnnotatedSection
-          id="add_clients"
-          title="Add Clients"
-          description="Add a new client to the database"
-        >
-          <Card>
-            <InlineStack align={"space-between"}>
-              <Text as={"h2"}>Add some clients</Text>
-              <Button
-                variant={"primary"}
-                onClick={handleAddClients}
-                loading={["loading", "submitting"].includes(
-                  fetcherHandleAddClients.state,
-                )}
-              >
-                Add Client
-              </Button>
-            </InlineStack>
-          </Card>
-        </Layout.AnnotatedSection>
       </Layout>
     </Page>
   );
 }
 
 function renderItem(item: any) {
-  const { id, name, company } = item;
+  const {
+    id,
+    name,
+    company,
+    _count: { Project: projectCount },
+  } = item;
   console.log("Item", item);
   return (
     <ResourceItem
@@ -196,7 +176,7 @@ function renderItem(item: any) {
           {company}
         </span>
         <div>
-          <Tag>tasks: 3</Tag>
+          <Tag>Projects: {projectCount}</Tag>
         </div>
       </Text>
     </ResourceItem>

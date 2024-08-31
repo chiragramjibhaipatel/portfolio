@@ -44,9 +44,9 @@ const ProjectSchema = z.object({
   clientId: z.string(),
   storeUrl: z.string(),
   status: z.enum(["OPEN", "IN_PROGRESS", "DONE"]),
-  testimonial: z.string().optional(),
-  solution: z.string().optional(),
-  hurdles: z.string().optional(),
+  testimonial: z.string().optional().nullable(),
+  solution: z.string().optional().nullable(),
+  hurdles: z.string().optional().nullable(),
   visible: z.boolean().optional(),
 });
 
@@ -200,7 +200,10 @@ export default function AddProject() {
     });
   }
 
-  const handleProjectChange = (value: string | string[], id: string) => {
+  const handleProjectChange = (
+    value: boolean | string | string[],
+    id: string,
+  ) => {
     console.log("value: ", value, "id: ", id);
     if (id === "clientId") {
       const client = loaderData.allClients.find(

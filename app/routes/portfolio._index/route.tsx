@@ -2,8 +2,7 @@ import {
   Testimonials,
   links as TestimonialLinks,
 } from "~/components/Testimonials";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
 import en from "@shopify/polaris/locales/en.json";
 import "@shopify/polaris/build/esm/styles.css";
 import {
@@ -56,6 +55,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       client: {
         select: {
           name: true,
+          company: true,
           imageUrl: true,
         },
       },
@@ -63,12 +63,31 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     take: pageSize,
     skip,
   });
-  return json({ projects });
+  const testimonials = await db.project.findMany({
+    where: {
+      visible: true,
+      testimonial: {
+        not: null,
+      },
+    },
+    select: {
+      id: true,
+      testimonial: true,
+      client: {
+        select: {
+          company: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+  return json({ projects, testimonials });
 };
 
 export default function Portfolio() {
   let loaderData = useLoaderData<typeof loader>();
-  const { projects } = loaderData;
+  const { projects, testimonials } = loaderData;
   return (
     <AppProvider i18n={en}>
       <Page>
@@ -126,7 +145,7 @@ export default function Portfolio() {
             </Layout>
           </Layout.Section>
           <Layout.Section>
-            <Testimonials data={data} />
+            <Testimonials testimonials={testimonials} />
           </Layout.Section>
         </Layout>
       </Page>

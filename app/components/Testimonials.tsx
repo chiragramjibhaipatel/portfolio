@@ -8,12 +8,23 @@ import {
   Text,
 } from "@shopify/polaris";
 import { useBlazeSlider } from "react-blaze-slider";
-import blazeSliderCustomStylesUrl from "../assets/blaze-slider-custom.css?url"
-
+import blazeSliderCustomStylesUrl from "../assets/blaze-slider-custom.css?url";
 
 export const links = [{ rel: "stylesheet", href: blazeSliderCustomStylesUrl }];
 
-export function Testimonials({ data }: { data: Data[] }) {
+export function Testimonials({
+  testimonials,
+}: {
+  testimonials: {
+    id: string;
+    testimonial: string | null;
+    client: {
+      name: string | null;
+      company: string | null;
+      imageUrl: string | null;
+    };
+  }[];
+}) {
   const ref = useBlazeSlider({
     all: {
       loop: true,
@@ -33,7 +44,7 @@ export function Testimonials({ data }: { data: Data[] }) {
       <div className="blaze-container">
         <div className="blaze-track-container">
           <div className="blaze-track">
-            {data.map((item) => (
+            {testimonials.map((item) => (
               <Testimonial key={item.id} item={item} />
             ))}
           </div>
@@ -51,18 +62,36 @@ export function Testimonials({ data }: { data: Data[] }) {
   );
 }
 
-function Testimonial({ item }: { item: Data }) {
-  const testimonial = item.testimonial.text.substring(0, 300).concat("...");
+function Testimonial({
+  item,
+}: {
+  item: {
+    id: string;
+    testimonial: string | null;
+    client: {
+      name: string | null;
+      company: string | null;
+      imageUrl: string | null;
+    };
+  };
+}) {
+  const testimonial = item.testimonial?.substring(0, 300).concat("...");
   return (
     <Card>
       <BlockStack gap={"200"} align="space-evenly">
         <BlockStack gap={"200"}>
           <InlineStack gap={"200"}>
-            <Avatar customer size="xl" name={item.client?.name} />
+            <Avatar customer size="xl" name={item.client?.name || undefined} />
             <BlockStack>
-              <Text variant="bodyMd" children={item.client?.name} as={"p"}></Text>
+              <Text
+                variant="bodyMd"
+                children={item.client?.name}
+                as={"p"}
+              ></Text>
               <Text variant="bodySm" as={"span"}>
-                <div style={{ fontStyle: "italic" }}>{item.client?.company}</div>
+                <div style={{ fontStyle: "italic" }}>
+                  {item.client?.company}
+                </div>
               </Text>
             </BlockStack>
           </InlineStack>

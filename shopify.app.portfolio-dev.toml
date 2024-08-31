@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://put-joshua-radios-utilization.trycloudflare.com"
+application_url = "https://centuries-medal-mentor-sin.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://put-joshua-radios-utilization.trycloudflare.com/auth/callback",
-  "https://put-joshua-radios-utilization.trycloudflare.com/auth/shopify/callback",
-  "https://put-joshua-radios-utilization.trycloudflare.com/api/auth/callback"
+  "https://centuries-medal-mentor-sin.trycloudflare.com/auth/callback",
+  "https://centuries-medal-mentor-sin.trycloudflare.com/auth/shopify/callback",
+  "https://centuries-medal-mentor-sin.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

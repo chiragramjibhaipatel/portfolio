@@ -186,3 +186,10 @@ function PortfolioHeader({
     </Card>
   );
 }
+
+//todo: hide the client review if there is no review
+//todo: hide the hurdles if there are no hurdles
+//todo: add back button to go to the portfolio page
+//todo: implement markdown preview
+//todo: implement a feature to ask client for testimonial - implement the form that client can use to submit the testimonial
+//todo: add scroll for solution, hurdle and client review section

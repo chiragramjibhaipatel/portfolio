@@ -476,3 +476,9 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
     );
   }
 }
+
+//todo: show only limited words in the description for each project
+//todo: have some better spacing between the items in the resource list
+//todo: implement "taggedWith" filter
+//todo: remove the save button beside the filter input
+//todo: fix the return value of highlightText function, it should be string, not array, see the map function on the parts

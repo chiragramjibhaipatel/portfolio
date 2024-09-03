@@ -10,6 +10,7 @@ import {
   Badge,
   BlockStack,
   Box,
+  CalloutCard,
   Card,
   Icon,
   InlineStack,
@@ -151,6 +152,30 @@ export default function Portfolio() {
           <Layout.Section>
             <NewsletterForm />
           </Layout.Section>
+          <Layout.Section>
+            <CalloutCard
+              title={"This website is a Shopify App - Remix template"}
+              illustration={
+                "https://cdn.shopify.com/shopifycloud/shopify_dev/assets/icons/48/app-2x-23fb62a245021a57818f731c5680cce151fa874356244bb6cfc4652be7161749.png"
+              }
+              primaryAction={{
+                content: "View on Github",
+                url: "https://github.com/chiragramjibhaipatel/portfolio",
+              }}
+            >
+              <Text as={"p"}>
+                This website is a Shopify App that uses Remix for server side
+                rendering. It is a portfolio website that showcases the projects
+                that I have worked on. It also has a newsletter form that allows
+                you to subscribe to my newsletter.
+              </Text>
+              <Text as={"p"}>
+                The Admin side of this website is an embedded Shopify App that
+                allows you to manage the projects and clients. Visit the GitHub
+                repository to learn more.
+              </Text>
+            </CalloutCard>
+          </Layout.Section>
         </Layout>
       </Page>
     </AppProvider>
@@ -213,3 +238,9 @@ function SocialMediaLinks() {
     </InlineStack>
   );
 }
+
+//todo: show the client thumb image in the testimonials
+//todo: make project list paginated
+//todo: add filters to the project list
+//todo: implement remix Link component and get the benefit of prefetching - https://remix.run/docs/en/main/components/link#prefetch - But how to make it work with
+//todo: add validation for the subscription field in the newsletter form - make sure that the email is valid and not empty

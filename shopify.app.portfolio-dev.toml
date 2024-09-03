@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://sperm-subtle-categories-strengthen.trycloudflare.com"
+application_url = "https://groups-collector-attribute-beans.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://sperm-subtle-categories-strengthen.trycloudflare.com/auth/callback",
-  "https://sperm-subtle-categories-strengthen.trycloudflare.com/auth/shopify/callback",
-  "https://sperm-subtle-categories-strengthen.trycloudflare.com/api/auth/callback"
+  "https://groups-collector-attribute-beans.trycloudflare.com/auth/callback",
+  "https://groups-collector-attribute-beans.trycloudflare.com/auth/shopify/callback",
+  "https://groups-collector-attribute-beans.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -93,3 +93,5 @@ export function ErrorBoundary() {
     </html>
   );
 }
+
+//todo: check if its legal to use the analytics, do I need to add the consent banner on the page?

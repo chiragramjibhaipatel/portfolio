@@ -215,3 +215,6 @@ export function ErrorBoundary() {
     </BlockStack>
   );
 }
+
+//todo: the shortcut action "Edit" only show on large screens. I just don't understand why, need to understand and fix
+//todo: show the client thumbnail in the resource item

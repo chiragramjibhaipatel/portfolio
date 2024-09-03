@@ -1,7 +1,11 @@
-import {useEffect, useMemo, useState} from "react";
-import Particles, {initParticlesEngine} from "@tsparticles/react";
-import {type ISourceOptions, MoveDirection, OutMode,} from "@tsparticles/engine";
-import {loadSlim} from "@tsparticles/slim"; // if you are going to use `loadSlim`, install the "@tsparticles/slim" package too.
+import { useEffect, useMemo, useState } from "react";
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import {
+  type ISourceOptions,
+  MoveDirection,
+  OutMode,
+} from "@tsparticles/engine";
+import { loadSlim } from "@tsparticles/slim"; // if you are going to use `loadSlim`, install the "@tsparticles/slim" package too.
 
 export function PortfolioBackground() {
   const [init, setInit] = useState(false);
@@ -14,19 +18,20 @@ export function PortfolioBackground() {
     });
   }, []);
 
-
   const options: ISourceOptions = useMemo(
     () => ({
-      responsive: [{
-        maxWidth: 784,
-        options: {
-          background: {
-            color: {
-              value: "rgba(255,255,255)",
+      responsive: [
+        {
+          maxWidth: 784,
+          options: {
+            background: {
+              color: {
+                value: "rgba(255,255,255)",
+              },
             },
-          }
-        }
-      }],
+          },
+        },
+      ],
       background: {
         color: {
           value: "rgba(0, 0, 0, 0.7)",
@@ -88,7 +93,7 @@ export function PortfolioBackground() {
           type: "triangle",
         },
         size: {
-          value: {min: 1, max: 10},
+          value: { min: 1, max: 10 },
         },
       },
       detectRetina: true,
@@ -97,11 +102,8 @@ export function PortfolioBackground() {
   );
 
   if (init) {
-    return (
-      <Particles
-        id="tsparticles"
-        options={options}
-      />
-    );
+    return <Particles id="tsparticles" options={options} />;
   }
 }
+
+//todo: the background lags too much on the chrome when wide screen. donno why

@@ -350,3 +350,7 @@ export default function NewClient() {
     </Page>
   );
 }
+
+//todo: on the right side column, when present, the image needs to be center align
+//todo: the list of projects in the right side column should be left aligned
+//todo: fix the issue to check the dirty data and enable/disable the save button while creating new client

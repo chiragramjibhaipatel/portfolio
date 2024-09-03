@@ -332,3 +332,6 @@ export default function AddProject() {
     </Page>
   );
 }
+
+//todo: fix the validation issue for the new project on status dropdown(important, this creates confusions for the user)
+//todo: add a feature to upload images for the project - make reflective changes in the portfolio page to show the uploaded images

@@ -55,6 +55,15 @@ export default function App() {
         />
         <Meta />
         <Links />
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-CWQP3FBMB4"
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-CWQP3FBMB4');`,
+          }}
+        />
       </head>
       <body>
         {isPortfolio && <PortfolioBackground />}

@@ -42,7 +42,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   } else {
     page = 1;
   }
-  let pageSize = 10;
+  let pageSize = 50;
   const skip = (page - 1) * pageSize;
   const projects = await db.project.findMany({
     where: {

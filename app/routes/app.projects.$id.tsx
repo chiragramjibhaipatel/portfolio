@@ -279,7 +279,7 @@ export default function AddProject() {
             <Card>
               <FormLayout>
                 <TextField
-                  label="Solution/Implementation"
+                  label="Solution/Implementation(supports markdown)"
                   name="solution"
                   id="solution"
                   value={projectData?.solution || ""}
@@ -289,7 +289,7 @@ export default function AddProject() {
                   onChange={handleProjectChange}
                 />
                 <TextField
-                  label="Hurdles/Challenges"
+                  label="Hurdles/Challenges(supports markdown)"
                   name="hurdles"
                   id="hurdles"
                   value={projectData?.hurdles || ""}

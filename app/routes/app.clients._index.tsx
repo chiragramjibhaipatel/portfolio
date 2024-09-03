@@ -40,7 +40,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         },
       },
     },
-    take: 5,
+    take: 50,
   });
 
   return json({ clients });

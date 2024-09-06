@@ -203,6 +203,17 @@ function SocialMediaLinks() {
   return (
     <InlineStack align={"start"} blockAlign={"start"}>
       <Box as={"div"} paddingInlineEnd={"200"}>
+        <Link
+          url="https://shopdevalliance.com/pages/members/chirag-patel"
+          target="_blank"
+        >
+          <img
+            height={20}
+            src="https://shopdevalliance.com/cdn/shop/files/sda_logomark_color.svg"
+          />
+        </Link>
+      </Box>
+      <Box as={"div"} paddingInlineEnd={"200"}>
         <Link url="https://twitter.com/chirag_r__patel" target="_blank">
           <Icon source={LogoXIcon} tone="base" />
         </Link>

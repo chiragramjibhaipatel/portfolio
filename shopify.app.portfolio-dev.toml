@@ -3,7 +3,7 @@
 client_id = "3615d309d910bbdefb0297feee282560"
 name = "portfolio-dev"
 handle = "portfolio-dev"
-application_url = "https://hockey-thinking-springs-warranty.trycloudflare.com"
+application_url = "https://placed-boating-wifi-illness.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products,write_themes"
 
 [auth]
 redirect_urls = [
-  "https://hockey-thinking-springs-warranty.trycloudflare.com/auth/callback",
-  "https://hockey-thinking-springs-warranty.trycloudflare.com/auth/shopify/callback",
-  "https://hockey-thinking-springs-warranty.trycloudflare.com/api/auth/callback"
+  "https://placed-boating-wifi-illness.trycloudflare.com/auth/callback",
+  "https://placed-boating-wifi-illness.trycloudflare.com/auth/shopify/callback",
+  "https://placed-boating-wifi-illness.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

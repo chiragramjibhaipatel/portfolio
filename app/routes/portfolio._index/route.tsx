@@ -234,7 +234,10 @@ function SocialMediaLinks() {
           url="https://daily-developer-hurdles.beehiiv.com/"
           target="_blank"
         >
-          <img height={20} src="https://support.beehiiv.com/favicon.ico" />
+          <img
+            height={20}
+            src="https://pbs.twimg.com/profile_images/1703611336431661056/B3_gromQ_400x400.jpg"
+          />
         </Link>
       </Box>
       <Box as={"div"} paddingInlineEnd={"200"} paddingInlineStart={"100"}>

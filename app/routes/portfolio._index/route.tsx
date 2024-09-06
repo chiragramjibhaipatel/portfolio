@@ -18,6 +18,7 @@ import {
   Link,
   Page,
   Text,
+  Tooltip,
 } from "@shopify/polaris";
 import { data, items, uniqueTones } from "~/data/custom_data";
 import { ProjectsList } from "~/components/ProjectsList";
@@ -203,51 +204,61 @@ function SocialMediaLinks() {
   return (
     <InlineStack align={"start"} blockAlign={"start"}>
       <Box as={"div"} paddingInlineEnd={"200"}>
-        <Link
-          url="https://shopdevalliance.com/pages/members/chirag-patel"
-          target="_blank"
-        >
-          <img
-            height={20}
-            src="https://shopdevalliance.com/cdn/shop/files/sda_logomark_color.svg"
-          />
-        </Link>
+        <Tooltip content="ShopDevAlliance">
+          <Link
+            url="https://shopdevalliance.com/pages/members/chirag-patel"
+            target="_blank"
+          >
+            <img
+              height={20}
+              src="https://shopdevalliance.com/cdn/shop/files/sda_logomark_color.svg"
+            />
+          </Link>
+        </Tooltip>
       </Box>
       <Box as={"div"} paddingInlineEnd={"200"}>
-        <Link url="https://twitter.com/chirag_r__patel" target="_blank">
-          <Icon source={LogoXIcon} tone="base" />
-        </Link>
+        <Tooltip content={"Twitter"}>
+          <Link url="https://twitter.com/chirag_r__patel" target="_blank">
+            <Icon source={LogoXIcon} tone="base" />
+          </Link>
+        </Tooltip>
       </Box>
       <Box as={"div"} paddingInlineEnd={"200"}>
-        <Link
-          url="https://www.linkedin.com/in/chirag-ramjibhai-patel/"
-          target="_blank"
-        >
-          <img
-            height={20}
-            src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"
-          />
-        </Link>
+        <Tooltip content={"LinkedIn"}>
+          <Link
+            url="https://www.linkedin.com/in/chirag-ramjibhai-patel/"
+            target="_blank"
+          >
+            <img
+              height={20}
+              src="https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"
+            />
+          </Link>
+        </Tooltip>
       </Box>
       <Box as={"div"} paddingInlineEnd={"200"}>
-        <Link
-          url="https://daily-developer-hurdles.beehiiv.com/"
-          target="_blank"
-        >
-          <img
-            height={20}
-            src="https://pbs.twimg.com/profile_images/1703611336431661056/B3_gromQ_400x400.jpg"
-          />
-        </Link>
+        <Tooltip content={"Beehiiv"}>
+          <Link
+            url="https://daily-developer-hurdles.beehiiv.com/"
+            target="_blank"
+          >
+            <img
+              height={20}
+              src="https://pbs.twimg.com/profile_images/1703611336431661056/B3_gromQ_400x400.jpg"
+            />
+          </Link>
+        </Tooltip>
       </Box>
       <Box as={"div"} paddingInlineEnd={"200"} paddingInlineStart={"100"}>
-        <Link url="mailto:chiragramjibhaipatel@gmail.com">
-          <img
-            height={20}
-            width={22}
-            src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg"
-          />
-        </Link>
+        <Tooltip content={"Email"}>
+          <Link url="mailto:chiragramjibhaipatel@gmail.com">
+            <img
+              height={20}
+              width={22}
+              src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg"
+            />
+          </Link>
+        </Tooltip>
       </Box>
     </InlineStack>
   );

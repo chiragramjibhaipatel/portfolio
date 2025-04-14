@@ -7,12 +7,6 @@ app = 'portfolio-stage'
 primary_region = 'ams'
 
 [build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/nodejs"]
-  [build.args]
-    NODE_ENV = "production"
-  [build.commands]
-    pre-build = "apt-get update && apt-get install -y openssl"
 
 [env]
   PORT = '3000'

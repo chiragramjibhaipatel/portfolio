@@ -22,3 +22,4 @@ yarn.lock
 .idea/portfolio.iml
 .idea/vcs.xml
 /.env.portfolio-stage
+.shopify

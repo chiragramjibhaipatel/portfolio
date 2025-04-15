@@ -3,6 +3,7 @@ FROM node:18-alpine
 EXPOSE 3000
 
 WORKDIR /app
+RUN apk add --no-cache openssl
 
 ENV NODE_ENV=production
 

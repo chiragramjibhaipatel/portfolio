@@ -127,7 +127,7 @@ export default function Portfolio() {
                   <Layout>
                     <Layout.Section>
                       <Text as="h2" variant="headingSm">
-                        Things I have hands on with...
+                        Things I have hands on with
                       </Text>
                     </Layout.Section>
                     <Layout.Section>

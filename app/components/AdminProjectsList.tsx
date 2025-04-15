@@ -255,7 +255,7 @@ export function AdminProjectsList({ allProjects }: AdminProjectsListProps) {
   return (
     <BlockStack gap={"2000"}>
       <CalloutCard
-        title={"This is a place where you can manage all your projects"}
+        title={"This is a place where you can manage all your projects..."}
         children="feel free to add more projects, edit or delete them. You can also search for a specific project using the search bar in the table below. Projects added here will be displayed on your portfolio page. You can choose if you want to hide a project from the portfolio page"
         primaryAction={{
           content: "Add Project",

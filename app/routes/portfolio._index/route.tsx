@@ -2,7 +2,7 @@ import {
   links as TestimonialLinks,
   Testimonials,
 } from "~/components/Testimonials";
-import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
 import en from "@shopify/polaris/locales/en.json";
 import "@shopify/polaris/build/esm/styles.css";
 import {
@@ -25,8 +25,6 @@ import { ProjectsList } from "~/components/ProjectsList";
 import "blaze-slider/dist/blaze.css";
 import "./styles.css";
 import { LogoXIcon } from "@shopify/polaris-icons";
-import db from "~/db.server";
-import { useLoaderData } from "@remix-run/react";
 import { NewsletterForm } from "~/components/newsletterForm";
 
 export const links = () => [...TestimonialLinks];
@@ -37,60 +35,34 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (url.searchParams.get("shop")) {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
-  let pageParam = url.searchParams.get("page");
-  let page: number;
-  if (pageParam) {
-    page = parseInt(pageParam);
-  } else {
-    page = 1;
-  }
-  let pageSize = 50;
-  const skip = (page - 1) * pageSize;
-  const projects = await db.project.findMany({
-    where: {
-      visible: true,
-    },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      testimonial: true,
-      client: {
-        select: {
-          name: true,
-          company: true,
-          imageUrl: true,
-        },
-      },
-    },
-    take: pageSize,
-    skip,
-  });
-  const testimonials = await db.project.findMany({
-    where: {
-      visible: true,
-      testimonial: {
-        not: null,
-      },
-    },
-    select: {
-      id: true,
-      testimonial: true,
-      client: {
-        select: {
-          company: true,
-          name: true,
-          imageUrl: true,
-        },
-      },
-    },
-  });
-  return json({ projects, testimonials });
+
+  return null;
 };
 
+const projects = data.map((item) => ({
+  id: item.id,
+  title: item.title,
+  description: item.description,
+  testimonial: item.testimonial?.text ?? null,
+  client: {
+    name: item.client?.name ?? "Unknown",
+    imageUrl: item.testimonial?.profilePhoto ?? null,
+  },
+}));
+
+const testimonials = data
+  .filter((item) => item.testimonial?.text)
+  .map((item) => ({
+    id: item.id,
+    testimonial: item.testimonial.text,
+    client: {
+      name: item.client?.name ?? null,
+      company: item.client?.company ?? null,
+      imageUrl: item.testimonial.profilePhoto ?? null,
+    },
+  }));
+
 export default function Portfolio() {
-  let loaderData = useLoaderData<typeof loader>();
-  const { projects, testimonials } = loaderData;
   return (
     <AppProvider i18n={en}>
       <Page>
